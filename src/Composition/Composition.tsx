@@ -1,6 +1,8 @@
 import { AbsoluteFill, useVideoConfig } from 'remotion';
 import { TransitionSeries } from '@remotion/transitions';
 import { z } from 'zod';
+import { useCurrentFrame } from 'remotion';
+import { getInputProps } from 'remotion';
 
 import Scene1, { scene1Schema } from './Scene1';
 import Scene2, { scene2Schema } from './Scene2';
@@ -11,6 +13,8 @@ import { LoadFonts } from '../lib/LoadFonts';
 import { getCSSVariables } from '../lib/helpers';
 import { Fonts } from '../types';
 import { BackgroundProps } from '../backgrounds';
+
+console.log("Main Component Loaded");
 
 export const MainSchema = z.object({
   fonts: Fonts,
@@ -28,29 +32,31 @@ export const MainSchema = z.object({
 
 type MainProps = z.infer<typeof MainSchema>;
 
-const Main: React.FC<MainProps> = ({
-  background,
-  theme,
-  fonts,
-  scene1Duration,
-  scene1Props,
-  scene2Duration,
-  scene2Props,
-  scene3Duration,
-  scene3Props,
-  scene4Duration,
-  scene4Props,
-}) => {
-  const { id } = useVideoConfig();
+const Main: React.FC<MainProps> = (props) => {
+  const config = useVideoConfig();
+  const frame = useCurrentFrame();
+  const inputProps = getInputProps();
+  console.log("Props from useInputProps:", JSON.stringify(inputProps));
+  console.log("Props in Main Component:", JSON.stringify(props));
+  console.log("Current Video Config:", JSON.stringify(config));
+  console.log("Current Frame:", frame);
 
-  // You work will be mainly with the Scenes files
+  // console.log("Props in Main Component:", JSON.stringify(props));
 
-  // Work in this File:
-  // adapt the transitions to an existing one or to your new one
+  const mergedProps = { ...props, ...inputProps }; // Ensure inputProps take precedence
+  console.log("Merged Props in Main Component:", mergedProps);
 
-  // If you want to use a different component than a <TransitionSeries>
-  // then you'll have to talk to me why it's necessary.
-
+  const fonts = mergedProps.fonts;
+  const background = mergedProps.background;
+  const scene1Duration = mergedProps.scene1Duration;
+  const scene1Props = mergedProps.scene1Props;
+  const scene2Duration = mergedProps.scene2Duration;
+  const scene2Props = mergedProps.scene2Props;
+  const scene3Duration = mergedProps.scene3Duration;
+  const scene3Props = mergedProps.scene3Props;
+  const scene4Duration = mergedProps.scene4Duration;
+  const scene4Props = mergedProps.scene4Props;
+  const id = useVideoConfig().id;
   return (
     <LoadFonts fonts={fonts}>
       <AbsoluteFill

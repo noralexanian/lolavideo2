@@ -19,6 +19,8 @@ import path from 'path';
 import {TCompMetadata} from "remotion";
 import Utils from "./src/utils.js";
 
+import { MainSchema } from './src/Composition/Composition';
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -61,9 +63,9 @@ class ServerRenderer {
 		this.compositions = await getCompositions(this.bundled, { inputProps: {} });
 	
 		// Log all available compositions with their dimensions
-		console.log(`[${Utils.currentDate}] Available compositions:`);
+		// console.log(`[${Utils.currentDate}] Available compositions:`);
 		this.compositions.forEach((comp) => {
-		console.log(`- ID: ${comp.id}, Width: ${comp.width}, Height: ${comp.height}`);
+		// console.log(`- ID: ${comp.id}, Width: ${comp.width}, Height: ${comp.height}`);
 		});
 	}
 
@@ -89,70 +91,76 @@ class ServerRenderer {
 	}
 
 	async generate(props: any, video: any) {
-		console.log("Props:", props);
-		
-		if (props.type == TYPE_PRODUCT) {
-			// Existing logic for TYPE_PRODUCT
-			if (props.photos.length < PHOTO_COUNT) {
-			console.log("LESS THAN " + PHOTO_COUNT + "!!!!");
-			for (let i = 0; i < PHOTO_COUNT; i++) {
-				if (props.photos.length < PHOTO_COUNT) {
-				props.photos.push(props.photos[i]);
-				} else {
-				break;
-				}
-			}
-			}
-			if (props.photos.length > PHOTO_COUNT) {
-			props.photos = props.photos.slice(0, PHOTO_COUNT);
-			}
-		} else if (props.type == TYPE_SHOP) {
-			// Existing logic for TYPE_SHOP
-			let photos = [];
-		
-			props.products.forEach(product => {
-			if (product.photos.length > 0) {
-				photos.push(product.photos[0]);
-			}
-			});
-		
-			while (photos.length < PHOTO_COUNT) {
-			console.log("Current photo count:", photos.length);
-			photos.push(...photos.slice(0, PHOTO_COUNT - photos.length));
-			}
-		
-			if (photos.length > PHOTO_COUNT) {
-			photos = photos.slice(0, PHOTO_COUNT);
-			}
-		
-			props.photos = photos;
+		// console.log("Props:", props);
+		// console.log("Original Props:", props);
+
+		// Transform props to match schema
+		const inputPropsForSchema = {
+			theme: 'Purple',
+			background: {
+			type: 'static',
+			background: 'white',
+			},
+			fonts: {
+			primary: props.fontFamily || 'ArchivoBlack',
+			secondary: 'Antonio',
+			},
+			scene1Duration: 123,
+			scene1Props: {
+			logo: './public/logo.png',
+			title: props.username || 'Default Title',
+			images: props.photos || [],
+			},
+			scene2Duration: 165,
+			scene2Props: {
+			logo: './public/logo2.png',
+			images: props.photos || [],
+			title: props.username || 'Default Title',
+			},
+			scene3Duration: 42,
+			scene3Props: {
+			logo: './public/logo2.png',
+			img: props.photos?.[0] || 'https://your-domain.com/default.png',
+			title: props.username || 'Default Title',
+			text: 'Disponible en',
+			},
+			scene4Duration: 120,
+			scene4Props: {
+			storeName: props.username || 'Test Store',
+			productName: props.products?.[0]?.name || 'Product',
+			price: props.products?.[0]?.price || 189,
+			title: props.username || 'HYPETHECLOSES',
+			logo: './public/logo2.png',
+			isProduct: true,
+			},
+		};
+
+		// console.log("Input Props for Schema:", inputPropsForSchema);
+		// console.log("Main Schema Definition:", MainSchema.shape);
+
+		// Validate props against schema
+		const validationResult = MainSchema.safeParse(inputPropsForSchema);
+		if (!validationResult.success) {
+			console.error("Props validation failed:", validationResult.error.errors);
+			throw new Error("Input props do not match schema");
 		}
-		
-		console.log("PHOTOS:", props.photos.length, props.photos.toString());
-		console.log("Video Type:", video);
-		
-		// Determine the compositionId based on the video parameter and props
-		// let compositionId = TYPE_VIDEO[video - 1];
-		// if (typeof props.uid === "undefined" && video) {
-		// 	compositionId = TYPE_VIDEO[video - 1];
-		// }
-		
-		// if (props.style > 1) {
-		// 	compositionId = "Style" + props.style;
-		// }
+
+		// Proceed with valid props
+		// console.log("Validated Input Props:", validationResult.data);
 		let compositionId = video;
+		// console.log("Composition ID:", compositionId);
 		
 		const videoId = typeof props.uid === "undefined" ? props.id : props.uid;
 		const videoFolder = this.getVideoFolder(compositionId, videoId);
 		const composition = this.compositions.find((c) => c.id === compositionId);
-		this.addStyleProperties(props);
+		// this.addStyleProperties(props);
 		
 		if (composition == null) {
 			throw new Error(`[${Utils.currentDate}] Failed to find composition ${compositionId}`);
 		}
 		
 		// Log composition details for debugging
-		console.log(`[${Utils.currentDate}] Selected Composition:`, composition);
+		// console.log(`[${Utils.currentDate}] Selected Composition:`, composition);
 		
 		const { width, height, fps, durationInFrames } = composition;
 		
@@ -167,59 +175,18 @@ class ServerRenderer {
 			// Handle error if needed
 			console.error(`Error creating folder ${videoFolder}:`, e);
 		}
-		
-		// const { assetsInfo } = await renderFrames({
-		// 	composition: compositionId,
-		// 	width: 300, // Dynamically set width
-		// 	height: 300, // Dynamically set height
-		// 	webpackBundle: this.bundled,
-		// 	onStart: () => console.log(`[${Utils.currentDate}] Rendering frames...`),
-		// 	onFrameUpdate: (f) => {
-		// 	if (f % 10 === 0) {
-		// 		console.log(`[${Utils.currentDate}] Rendered frame ${f}`);
-		// 	}
-		// 	},
-		// 	parallelism: null,
-		// 	outputDir: videoFolder,
-		// 	inputProps: { ...props, images: props.photos },
-		// 	imageFormat: 'jpeg',
-		// });
 
-		// const { assetsInfo } = await renderFrames({
-		// 	composition: composition,
-		// 	webpackBundle: this.bundled,
-		// 	onStart: () => console.log(`[${Utils.currentDate}] Rendering frames...`),
-		// 	onFrameUpdate: (f) => {
-		// 		if (f % 10 === 0) {
-		// 		console.log(`[${Utils.currentDate}] Rendered frame ${f}`);
-		// 		}
-		// 	},
-		// 	parallelism: null,
-		// 	outputDir: videoFolder,
-		// 	inputProps: { ...props, images: props.photos },
-		// 	imageFormat: 'jpeg',
-		// });
-		  
 		const { assetsInfo } = await renderFrames({
 			composition,
-			serveUrl: this.bundled, // New syntax
-			inputProps: { ...props },
+			serveUrl: this.bundled,
+			inputProps: validationResult.data,
 			outputDir: videoFolder,
 			imageFormat: 'jpeg',
+			dumpBrowserLogs: true,
 		});
-		  
+		// console.log("Props passed to renderFrames:", validationResult.data);
 		
 		const finalOutput = path.join(this.folder, `${videoId}.mp4`);
-		// await stitchFramesToVideo({
-		// 	dir: videoFolder,
-		// 	force: true,
-		// 	fps: composition.fps,
-		// 	height: composition.height,
-		// 	width: composition.width,
-		// 	outputLocation: finalOutput,
-		// 	imageFormat: 'jpeg',
-		// 	assetsInfo,
-		// });
 
 		await stitchFramesToVideo({
 			dir: videoFolder,
@@ -366,11 +333,12 @@ app.get('/instagram-video/', async (req, res) => {
 		}
 
 		const cacheKey = JSON.stringify({ ...req.query, videoType });
+		// const cacheKey = JSON.stringify({ props, videoType });
 
 		if (cache.has(cacheKey)) {
-		console.log("File available from cache");
-		serverRenderer.sendFile(req, res, cache.get(cacheKey));
-		return;
+			console.log("File available from cache");
+			serverRenderer.sendFile(req, res, cache.get(cacheKey));
+			return;
 		}
 
 		// Generate the video

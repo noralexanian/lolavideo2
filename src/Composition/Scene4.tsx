@@ -5,9 +5,9 @@ import { Background } from '../components/Background';
 import { BackgroundProps } from '../backgrounds';
 import { EaseText } from '../components/animations/EaseText';
 import { defaultSpring, interpolateSpring } from '../lib/helpers';
-import * as Archivo from '@remotion/google-fonts/ArchivoBlack';
+// import * as Archivo from '@remotion/google-fonts/ArchivoBlack';
 
-Archivo.loadFont();
+// Archivo.loadFont();
 
 export const scene4Schema = z.object({
   logo: z.string(),
@@ -65,7 +65,7 @@ const Scene4: React.FC<Scene4Props> = (props) => {
           justifyContent: 'space-between',
           alignItems: 'center',
           flexDirection: 'column',
-          fontFamily: 'Archivo black',
+          // fontFamily: 'Archivo black',
         }}
       >
         <EaseText text={props.storeName} startAt={11} size={50} />
