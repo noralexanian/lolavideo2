@@ -1,0 +1,11 @@
+// .eslintignore
+**/node_modules/*
+**/out/*
+**/.next/*
+next.config.js
+
+...
+src/setupTests.ts
+postcss.config.js
+postcss.config.cjs
+tailwind.config.js
