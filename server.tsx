@@ -91,119 +91,158 @@ class ServerRenderer {
 	}
 
 	async generate(props: any, video: any) {
-		// console.log("Props:", props);
-		// console.log("Original Props:", props);
+		console.log("Original Props:", props);
+
+		let isProduct = false;
+
+		if (props.type == TYPE_PRODUCT) {
+				isProduct = false;
+				props.price = parseFloat(props.price);
+
+				// Update photos for TYPE_PRODUCT
+				if (props.photos.length < PHOTO_COUNT) {
+						console.log(`Less than ${PHOTO_COUNT} photos for PRODUCT. Adding more...`);
+						let i = 0;
+						for (i = 0; i < PHOTO_COUNT; i++) {
+								if (props.photos.length < PHOTO_COUNT) {
+										props.photos.push(props.photos[i % props.photos.length]);
+								} else {
+										break;
+								}
+						}
+				}
+
+				// Trimming photos to PHOTO_COUNT
+				if (props.photos.length > PHOTO_COUNT) {
+						props.photos = props.photos.slice(0, PHOTO_COUNT);
+				}
+		} else if (props.type == TYPE_SHOP) {
+				isProduct = true;
+
+				// Setup photos by getting at least one photo per product
+				let photos: string[] = [];
+
+				// Add the first photo of each product to the photos array
+				props.products.forEach(product => {
+						if (product.photos.length > 0) {
+								photos.push(product.photos[0]);
+						}
+				});
+
+				// If the number of photos is less than PHOTO_COUNT, repeat the photos
+				while (photos.length < PHOTO_COUNT) {
+						console.log(`Less than ${PHOTO_COUNT} photos for SHOP. Adding more...`);
+						photos.push(...photos.slice(0, PHOTO_COUNT - photos.length));
+				}
+
+				// Trimming photos to PHOTO_COUNT
+				if (photos.length > PHOTO_COUNT) {
+						photos = photos.slice(0, PHOTO_COUNT);
+				}
+
+				// Set the photos array back to props
+				props.photos = photos;
+		}
 
 		// Transform props to match schema
 		const inputPropsForSchema = {
-			theme: 'Purple',
-			background: {
-			type: 'static',
-			background: 'white',
-			},
-			fonts: {
-			primary: props.fontFamily || 'ArchivoBlack',
-			secondary: 'Antonio',
-			},
-			scene1Duration: 123,
-			scene1Props: {
-			logo: './public/logo.png',
-			title: props.username || 'Default Title',
-			images: props.photos || [],
-			},
-			scene2Duration: 165,
-			scene2Props: {
-			logo: './public/logo2.png',
-			images: props.photos || [],
-			title: props.username || 'Default Title',
-			},
-			scene3Duration: 42,
-			scene3Props: {
-			logo: './public/logo2.png',
-			img: props.photos?.[0] || 'https://your-domain.com/default.png',
-			title: props.username || 'Default Title',
-			text: 'Disponible en',
-			},
-			scene4Duration: 120,
-			scene4Props: {
-			storeName: props.username || 'Test Store',
-			productName: props.products?.[0]?.name || 'Product',
-			price: props.products?.[0]?.price || 189,
-			title: props.username || 'HYPETHECLOSES',
-			logo: './public/logo2.png',
-			isProduct: true,
-			},
+				theme: 'Purple',
+				background: {
+						type: 'static',
+						background: 'white',
+				},
+				fonts: {
+						primary: props.fontFamily || 'ArchivoBlack',
+						secondary: 'Antonio',
+				},
+				scene1Duration: 123,
+				scene1Props: {
+						logo: './public/logo.png',
+						title: props.username || 'Default Title',
+						images: props.photos || [],
+				},
+				scene2Duration: 165,
+				scene2Props: {
+						logo: './public/logo2.png',
+						images: props.photos || [],
+						title: props.username || 'Default Title',
+				},
+				scene3Duration: 42,
+				scene3Props: {
+						logo: './public/logo2.png',
+						img: props.photos?.[0] || 'https://your-domain.com/default.png',
+						title: props.username || 'Default Title',
+						text: 'Disponible en',
+				},
+				scene4Duration: 120,
+				scene4Props: {
+						storeName: props.username || 'Test Store',
+						productName: props.products?.[0]?.name || 'Product',
+						price: props.price || 189,
+						title: props.username || 'HYPETHECLOSES',
+						logo: './public/logo2.png',
+						isProduct: isProduct,
+				},
 		};
 
-		// console.log("Input Props for Schema:", inputPropsForSchema);
-		// console.log("Main Schema Definition:", MainSchema.shape);
+		console.log("Input Props for Schema:", inputPropsForSchema);
+		console.log("Main Schema Definition:", MainSchema.shape);
 
 		// Validate props against schema
 		const validationResult = MainSchema.safeParse(inputPropsForSchema);
 		if (!validationResult.success) {
-			console.error("Props validation failed:", validationResult.error.errors);
-			throw new Error("Input props do not match schema");
+				console.error("Props validation failed:", validationResult.error.errors);
+				throw new Error("Input props do not match schema");
 		}
 
-		// Proceed with valid props
-		// console.log("Validated Input Props:", validationResult.data);
-		let compositionId = video;
-		// console.log("Composition ID:", compositionId);
-		
+		const compositionId = video;
+
 		const videoId = typeof props.uid === "undefined" ? props.id : props.uid;
 		const videoFolder = this.getVideoFolder(compositionId, videoId);
 		const composition = this.compositions.find((c) => c.id === compositionId);
-		// this.addStyleProperties(props);
-		
+
 		if (composition == null) {
-			throw new Error(`[${Utils.currentDate}] Failed to find composition ${compositionId}`);
+				throw new Error(`[${Utils.currentDate}] Failed to find composition ${compositionId}`);
 		}
-		
-		// Log composition details for debugging
-		// console.log(`[${Utils.currentDate}] Selected Composition:`, composition);
-		
+
 		const { width, height, fps, durationInFrames } = composition;
-		
-		// Validate width and height
+
 		if (typeof width !== 'number' || typeof height !== 'number') {
-			throw new Error(`[${Utils.currentDate}] Composition ${compositionId} is missing width or height.`);
+				throw new Error(`[${Utils.currentDate}] Composition ${compositionId} is missing width or height.`);
 		}
-		
+
 		try {
-			await fs.promises.mkdir(videoFolder);
+				await fs.promises.mkdir(videoFolder);
 		} catch (e) {
-			// Handle error if needed
-			console.error(`Error creating folder ${videoFolder}:`, e);
+				console.error(`Error creating folder ${videoFolder}:`, e);
 		}
 
 		const { assetsInfo } = await renderFrames({
-			composition,
-			serveUrl: this.bundled,
-			inputProps: validationResult.data,
-			outputDir: videoFolder,
-			imageFormat: 'jpeg',
-			dumpBrowserLogs: true,
+				composition,
+				serveUrl: this.bundled,
+				inputProps: validationResult.data,
+				outputDir: videoFolder,
+				imageFormat: 'jpeg',
 		});
-		// console.log("Props passed to renderFrames:", validationResult.data);
-		
+
 		const finalOutput = path.join(this.folder, `${videoId}.mp4`);
 
 		await stitchFramesToVideo({
-			dir: videoFolder,
-			fps: composition.fps,
-			height: composition.height,
-			width: composition.width,
-			outputLocation: finalOutput,
-			imageFormat: 'jpeg',
-			assetsInfo,
-			serveUrl: this.bundled, // use serveUrl here too
+				dir: videoFolder,
+				fps: composition.fps,
+				height: composition.height,
+				width: composition.width,
+				outputLocation: finalOutput,
+				imageFormat: 'jpeg',
+				assetsInfo,
+				serveUrl: this.bundled,
 		});
-		  
-		
-		fs.promises.rm(videoFolder, { recursive: true }); // Clean up
-		
+
+		fs.promises.rm(videoFolder, { recursive: true });
+
 		return finalOutput;
 	}
+
 	  
 	// based on https://www.the-data-wrangler.com/video-streaming-in-safari/
 	sendFile (req : Request, res : Response, filePath: string) {
@@ -314,7 +353,7 @@ app.get('/instagram-video/', async (req, res) => {
 		return res.status(400).send("Invalid props provided");
 	}
 
-	console.log(`[${Utils.currentDate}] Render request received`, props);
+	// console.log(`[${Utils.currentDate}] Render request received`, props);
 	const startTime = new Date();
 
 	try {

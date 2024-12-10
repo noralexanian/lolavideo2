@@ -1,7 +1,7 @@
 import { AbsoluteFill, useVideoConfig } from 'remotion';
 import { TransitionSeries } from '@remotion/transitions';
 import { z } from 'zod';
-import { useCurrentFrame } from 'remotion';
+// import { useCurrentFrame } from 'remotion';
 import { getInputProps } from 'remotion';
 
 import Scene1, { scene1Schema } from './Scene1';
@@ -14,7 +14,7 @@ import { getCSSVariables } from '../lib/helpers';
 import { Fonts } from '../types';
 import { BackgroundProps } from '../backgrounds';
 
-console.log("Main Component Loaded");
+// console.log("Main Component Loaded");
 
 export const MainSchema = z.object({
   fonts: Fonts,
@@ -33,18 +33,18 @@ export const MainSchema = z.object({
 type MainProps = z.infer<typeof MainSchema>;
 
 const Main: React.FC<MainProps> = (props) => {
-  const config = useVideoConfig();
-  const frame = useCurrentFrame();
+  // const config = useVideoConfig();
+  // const frame = useCurrentFrame();
   const inputProps = getInputProps();
-  console.log("Props from useInputProps:", JSON.stringify(inputProps));
-  console.log("Props in Main Component:", JSON.stringify(props));
-  console.log("Current Video Config:", JSON.stringify(config));
-  console.log("Current Frame:", frame);
+  // console.log("Props from useInputProps:", JSON.stringify(inputProps));
+  // console.log("Props in Main Component:", JSON.stringify(props));
+  // console.log("Current Video Config:", JSON.stringify(config));
+  // console.log("Current Frame:", frame);
 
   // console.log("Props in Main Component:", JSON.stringify(props));
 
   const mergedProps = { ...props, ...inputProps }; // Ensure inputProps take precedence
-  console.log("Merged Props in Main Component:", mergedProps);
+  // console.log("Merged Props in Main Component:", mergedProps);
 
   const fonts = mergedProps.fonts;
   const background = mergedProps.background;

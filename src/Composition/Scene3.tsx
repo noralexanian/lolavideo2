@@ -2,7 +2,7 @@ import { AbsoluteFill, Img, useCurrentFrame } from 'remotion';
 import { z } from 'zod';
 import { BackgroundProps } from '../backgrounds';
 import { defaultSpring, interpolateSpring } from '../lib/helpers';
-import { TextCharsFromRightToLeft } from '../components/animations/TextCharsFromRightToLeft';
+// import { TextCharsFromRightToLeft } from '../components/animations/TextCharsFromRightToLeft';
 import { Footer } from '../components/Footer';
 import { WIDTH } from '../lib/consts';
 
@@ -40,7 +40,7 @@ const Scene3: React.FC<Scene3Props> = (props) => {
           opacity,
         }}
       />
-      <span
+      {/* <span
         style={{
           position: 'absolute',
           color: 'white',
@@ -50,7 +50,7 @@ const Scene3: React.FC<Scene3Props> = (props) => {
         }}
       >
         <TextCharsFromRightToLeft text={props.text} />
-      </span>
+      </span> */}
       <Footer logo={props.logo} store={props.title} theme="Purple" />
     </AbsoluteFill>
   );
