@@ -7,7 +7,7 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="Template"
+        id="Video3"
         component={Main}
         schema={MainSchema}
         fps={FPS}

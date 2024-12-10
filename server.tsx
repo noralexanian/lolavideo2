@@ -29,7 +29,7 @@ const TYPE_PRODUCT = 0;
 const TYPE_SHOP = 1;
 
 // const TYPE_VIDEO = ['Video1', 'Video2', 'Video3']
-const TYPE_VIDEO = ['Video1', 'Video2', 'Template', 'Compare'];
+const TYPE_VIDEO = ['Video1', 'Video2', 'Video3', 'Compare'];
 
 const PHOTO_COUNT = 7;
 
@@ -56,16 +56,13 @@ class ServerRenderer {
 	}
 
 	async setup() {
-		console.log("[" + Utils.currentDate + "] Setting up remotion");
-		await this.setupFolder();
-	
-		this.bundled = await bundle(path.join(__dirname, './src/index.tsx'));
-		this.compositions = await getCompositions(this.bundled, { inputProps: {} });
-	
-		// Log all available compositions with their dimensions
-		// console.log(`[${Utils.currentDate}] Available compositions:`);
-		this.compositions.forEach((comp) => {
-		// console.log(`- ID: ${comp.id}, Width: ${comp.width}, Height: ${comp.height}`);
+			console.log("[" + Utils.currentDate + "] Setting up remotion");
+			await this.setupFolder();
+		
+			this.bundled = await bundle(path.join(__dirname, './src/index.tsx'));
+			this.compositions = await getCompositions(this.bundled, { inputProps: {} });
+		
+			this.compositions.forEach((comp) => {
 		});
 	}
 
@@ -177,7 +174,6 @@ class ServerRenderer {
 				scene4Duration: 120,
 				scene4Props: {
 						storeName: props.username || 'Test Store',
-						// productName: props.products?.[0]?.name || 'Product',
 						productName: props.productName || 'Product',
 						price: props.price || 189,
 						title: props.username || 'HYPETHECLOSES',
@@ -369,7 +365,7 @@ app.get('/instagram-video/', async (req, res) => {
 		videoType = TYPE_VIDEO[videoIndex - 1];
 		} else {
 		// Optionally, set a default video type if 'video' parameter is missing
-		videoType = 'Template'; // Example default
+		videoType = 'Video3'; // Example default
 		}
 
 		const cacheKey = JSON.stringify({ ...req.query, videoType });
