@@ -177,7 +177,8 @@ class ServerRenderer {
 				scene4Duration: 120,
 				scene4Props: {
 						storeName: props.username || 'Test Store',
-						productName: props.products?.[0]?.name || 'Product',
+						// productName: props.products?.[0]?.name || 'Product',
+						productName: props.productName || 'Product',
 						price: props.price || 189,
 						title: props.username || 'HYPETHECLOSES',
 						logo: './public/logo2.png',
