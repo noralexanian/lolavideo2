@@ -1,11 +1,10 @@
 // // BottomBar.tsx
 
 import { WIDTH } from '../lib/consts';
-// import * as OpenSans from '@remotion/google-fonts/Roboto';
-// import * as Anton from '@remotion/google-fonts/Anton';
 import { Img, staticFile } from 'remotion';
-// OpenSans.loadFont();
-// Anton.loadFont();
+import { loadFont as loadOpenSans } from '@remotion/google-fonts/OpenSans';
+
+const openSans = loadOpenSans(); // OpenSans font
 
 interface FooterProps {
   logo: string;
@@ -42,6 +41,7 @@ export const Footer: React.FC<FooterProps> = ({
       <span
         style={{
           fontSize: '20px',
+          fontFamily: openSans.fontFamily,
           // fontFamily: 'OpenSans',
           color: `${theme !== 'White' ? '#fff' : '#000'}`,
           textTransform: 'lowercase',

@@ -61,10 +61,10 @@ export const RemotionRoot: React.FC = () => {
           },
           scene4Duration: 120,
           scene4Props: {
-            storeName: 'Test Store',
+            storeName: 'ClosetMetamorphosis',
             productName: 'Product',
             price: 189,
-            title: 'HYPETHECLOSES',
+            title: 'HYPETHECLOSET',
             logo: staticFile('Logo2.png'),
             isProduct: true,
           },

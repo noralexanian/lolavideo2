@@ -8,25 +8,29 @@ interface TextProps {
   startAt: number;
   size?: number;
   fontFamily?: string;
+  boldText?: string; // New prop for the text to be bold
 }
+
 export const EaseText = ({
   text,
   startAt = 0,
   size = 20,
   fontFamily = 'Archivo Black',
+  boldText,
 }: TextProps) => {
   const refactoredText = useTextSplitter({
     maxLines: 3,
     maxWidth: WIDTH - 100,
     text: text,
     fontSize: size,
-    fontWeight: 'bold',
+    fontWeight: 'normal',
   });
   const frame = useCurrentFrame();
   const springEffect = defaultSpring({ frame, delay: startAt, durationInFrames: 12 });
   const scaleSpringEffect = defaultSpring({ frame, delay: startAt + 6, durationInFrames: 50 });
   const opacity = interpolateSpring(springEffect, [0, 1]);
   const scale = interpolateSpring(scaleSpringEffect, [1, 1.05]);
+
   const reText = text.split('\n');
 
   return (
@@ -43,12 +47,19 @@ export const EaseText = ({
         flexDirection: 'column',
       }}
     >
-      <span style={{ fontFamily: fontFamily }}>{reText[0]}</span>
-      {reText.length > 1 && (
-        <>
-          <span style={{ fontFamily: fontFamily, marginTop: '20px' }}>{reText[1]}</span>
-        </>
-      )}
+      {reText.map((line, index) => (
+        <span key={index} style={{ fontFamily, marginTop: index > 0 ? '20px' : undefined }}>
+          {boldText && line.includes(boldText) ? (
+            <>
+              {line.split(boldText)[0]}
+              <strong style={{ fontFamily }}>{boldText}</strong>
+              {line.split(boldText)[1]}
+            </>
+          ) : (
+            line
+          )}
+        </span>
+      ))}
     </div>
   );
 };

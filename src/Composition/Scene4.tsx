@@ -5,9 +5,10 @@ import { Background } from '../components/Background';
 import { BackgroundProps } from '../backgrounds';
 import { EaseText } from '../components/animations/EaseText';
 import { defaultSpring, interpolateSpring } from '../lib/helpers';
-// import * as Archivo from '@remotion/google-fonts/ArchivoBlack';
-
-// Archivo.loadFont();
+import { loadFont as loadOpenSans } from '@remotion/google-fonts/OpenSans';
+import { loadFont as loadArchivoBlack } from '@remotion/google-fonts/ArchivoBlack';
+const openSans = loadOpenSans();
+const archivoBlack = loadArchivoBlack();
 
 export const scene4Schema = z.object({
   logo: z.string(),
@@ -65,18 +66,20 @@ const Scene4: React.FC<Scene4Props> = (props) => {
           justifyContent: 'space-between',
           alignItems: 'center',
           flexDirection: 'column',
-          // fontFamily: 'Archivo black',
+          fontFamily: archivoBlack.fontFamily,
         }}
       >
         <EaseText text={props.storeName} startAt={11} size={50} />
         {!props.isProduct && <EaseText text={props.productName} startAt={15} size={40} />}
         {!props.isProduct && <EaseText text={'$' + props.price} startAt={20} size={50} />}
         <EaseText
-          text={'Disponible en\nLolapay.com/' + props.title}
+          text={'Disponible en\nlolapay.com/' + props.title}
           startAt={29}
           size={25}
-          fontFamily="Open Sans"
+          fontFamily={openSans.fontFamily}
+          boldText={props.title} // Pass the title to make it bold
         />
+
       </div>
     </AbsoluteFill>
   );

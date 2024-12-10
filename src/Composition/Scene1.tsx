@@ -5,7 +5,9 @@ import { Background } from '../components/Background';
 import { BackgroundProps } from '../backgrounds';
 import Image from '../components/Image';
 import { Footer } from '../components/Footer';
-import { fontVar } from '../lib/helpers';
+import { loadFont as loadAnton } from '@remotion/google-fonts/Anton';
+
+const anton = loadAnton(); // Anton font
 
 export const scene1Schema = z.object({
   logo: z.string(),
@@ -55,7 +57,7 @@ const Scene1: React.FC<Scene1Props> = (props) => {
               minHeight: height,
               alignItems: 'center',
               justifyContent: 'center',
-              fontFamily: fontVar('secondary'),
+              fontFamily: anton.fontFamily,
               fontSize: '25px',
               zIndex: 1,
               textWrap: 'nowrap',

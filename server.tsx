@@ -203,6 +203,7 @@ class ServerRenderer {
 		}
 
 		const { width, height, fps, durationInFrames } = composition;
+		console.log("Composition:", composition, "Width:", width, "Height:", height, "FPS:", fps, "Duration in Frames:", durationInFrames);
 
 		if (typeof width !== 'number' || typeof height !== 'number') {
 				throw new Error(`[${Utils.currentDate}] Composition ${compositionId} is missing width or height.`);
