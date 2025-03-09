@@ -20,6 +20,9 @@ import {TCompMetadata} from "remotion";
 import Utils from "./src/utils.js";
 
 import { MainSchema } from './src/Composition/Composition';
+import { getAllTemplateIds } from './src/templates';
+import { Video4Schema } from './src/Video4Schema';
+import { Video5Schema } from './src/Video5Schema';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,8 +31,8 @@ const cache = new Map<string, string>();
 const TYPE_PRODUCT = 0;
 const TYPE_SHOP = 1;
 
-// const TYPE_VIDEO = ['Video1', 'Video2', 'Video3']
-const TYPE_VIDEO = ['Video1', 'Video2', 'Video3', 'Compare'];
+// Get available template IDs dynamically
+const TYPE_VIDEO = [...getAllTemplateIds(), 'Compare'];
 
 const PHOTO_COUNT = 7;
 
@@ -91,149 +94,217 @@ class ServerRenderer {
 		console.log("Original Props:", props);
 
 		let isProduct = false;
+		let inputPropsForSchema: any;
+		let validInputProps: any;
 
-		if (props.type == TYPE_PRODUCT) {
+		// Check if this is Video4 or Video5 template
+		if (video === 'Video4' || video === 'Video5') {
+			// Prepare photos array for Video4/Video5
+			if (!props.photos) {
+				props.photos = [];
+			}
+			
+			// Determine min required photos based on template
+			const minRequiredPhotos = video === 'Video5' ? 11 : 8;
+			
+			// Ensure we have enough photos
+			if (props.photos.length < minRequiredPhotos) {
+				console.log(`Less than ${minRequiredPhotos} photos for ${video}. Adding more...`);
+				let i = 0;
+				while (props.photos.length < minRequiredPhotos) {
+					props.photos.push(props.photos[i % Math.max(1, props.photos.length)]);
+					i++;
+				}
+			}
+
+			// Set up Video4/Video5 specific props
+			inputPropsForSchema = {
+				images: props.photos || [],
+				username: props.username || 'Default Store',
+				productName: props.productName || 'Product',
+				price: props.price ? props.price.toString() : '199',
+				type: props.type || TYPE_PRODUCT,
+			};
+
+			// Validate props against appropriate schema
+			let validationResult;
+			if (video === 'Video4') {
+				validationResult = Video4Schema.safeParse(inputPropsForSchema);
+				if (!validationResult.success) {
+					console.error("Props validation failed for Video4:", validationResult.error.errors);
+					throw new Error("Input props do not match schema for Video4");
+				}
+			} else { // Video5
+				validationResult = Video5Schema.safeParse(inputPropsForSchema);
+				if (!validationResult.success) {
+					console.error("Props validation failed for Video5:", validationResult.error.errors);
+					throw new Error("Input props do not match schema for Video5");
+				}
+			}
+			
+			validInputProps = inputPropsForSchema;
+		} else {
+			// Handle Video1, Video2, Video3 templates
+			if (props.type == TYPE_PRODUCT) {
 				isProduct = false;
 				props.price = parseFloat(props.price);
 
 				// Update photos for TYPE_PRODUCT
-				if (props.photos.length < PHOTO_COUNT) {
-						console.log(`Less than ${PHOTO_COUNT} photos for PRODUCT. Adding more...`);
-						let i = 0;
-						for (i = 0; i < PHOTO_COUNT; i++) {
-								if (props.photos.length < PHOTO_COUNT) {
-										props.photos.push(props.photos[i % props.photos.length]);
-								} else {
-										break;
-								}
+				if (props.photos && props.photos.length < PHOTO_COUNT) {
+					console.log(`Less than ${PHOTO_COUNT} photos for PRODUCT. Adding more...`);
+					let i = 0;
+					for (i = 0; i < PHOTO_COUNT; i++) {
+						if (props.photos.length < PHOTO_COUNT) {
+							props.photos.push(props.photos[i % props.photos.length]);
+						} else {
+							break;
 						}
+					}
 				}
 
 				// Trimming photos to PHOTO_COUNT
-				if (props.photos.length > PHOTO_COUNT) {
-						props.photos = props.photos.slice(0, PHOTO_COUNT);
+				if (props.photos && props.photos.length > PHOTO_COUNT) {
+					props.photos = props.photos.slice(0, PHOTO_COUNT);
 				}
-		} else if (props.type == TYPE_SHOP) {
+			} else if (props.type == TYPE_SHOP) {
 				isProduct = true;
 
 				// Setup photos by getting at least one photo per product
 				let photos: string[] = [];
 
 				// Add the first photo of each product to the photos array
-				props.products.forEach(product => {
-						if (product.photos.length > 0) {
-								photos.push(product.photos[0]);
+				if (props.products) {
+					props.products.forEach(product => {
+						if (product.photos && product.photos.length > 0) {
+							photos.push(product.photos[0]);
 						}
-				});
+					});
+				}
 
 				// If the number of photos is less than PHOTO_COUNT, repeat the photos
 				while (photos.length < PHOTO_COUNT) {
-						console.log(`Less than ${PHOTO_COUNT} photos for SHOP. Adding more...`);
-						photos.push(...photos.slice(0, PHOTO_COUNT - photos.length));
+					console.log(`Less than ${PHOTO_COUNT} photos for SHOP. Adding more...`);
+					photos.push(...photos.slice(0, Math.min(PHOTO_COUNT - photos.length, photos.length || 1)));
 				}
 
 				// Trimming photos to PHOTO_COUNT
 				if (photos.length > PHOTO_COUNT) {
-						photos = photos.slice(0, PHOTO_COUNT);
+					photos = photos.slice(0, PHOTO_COUNT);
 				}
 
 				// Set the photos array back to props
 				props.photos = photos;
-		}
+			}
 
-		// Transform props to match schema
-		const inputPropsForSchema = {
+			// Handle case where no photos are provided
+			if (!props.photos || props.photos.length === 0) {
+				props.photos = [
+					'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416515823.png',
+					'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416516513.png',
+					'https://lolapay-products.s3.amazonaws.com/2/2/0/220328/medium_1720547904573.png'
+				];
+				
+				// Duplicate photos to reach PHOTO_COUNT
+				while (props.photos.length < PHOTO_COUNT) {
+					props.photos.push(props.photos[props.photos.length % 3]);
+				}
+			}
+
+			// Transform props to match schema for Video1, Video2, Video3
+			inputPropsForSchema = {
 				theme: 'Purple',
 				background: {
-						type: 'static',
-						background: 'white',
+					type: 'static',
+					background: 'white',
 				},
 				fonts: {
-						primary: props.fontFamily || 'ArchivoBlack',
-						secondary: 'Antonio',
+					primary: props.fontFamily || 'ArchivoBlack',
+					secondary: 'Antonio',
 				},
 				scene1Duration: 123,
 				scene1Props: {
-						logo: './public/logo.png',
-						title: props.username || 'Default Title',
-						images: props.photos || [],
+					logo: './public/logo.png',
+					title: props.username || 'Default Title',
+					images: props.photos || [],
 				},
 				scene2Duration: 165,
 				scene2Props: {
-						logo: './public/logo2.png',
-						images: props.photos || [],
-						title: props.username || 'Default Title',
+					logo: './public/logo2.png',
+					images: props.photos || [],
+					title: props.username || 'Default Title',
 				},
 				scene3Duration: 42,
 				scene3Props: {
-						logo: './public/logo2.png',
-						img: props.photos?.[0] || 'https://your-domain.com/default.png',
-						title: props.username || 'Default Title',
-						text: 'Disponible en',
+					logo: './public/logo2.png',
+					img: props.photos?.[0] || 'https://your-domain.com/default.png',
+					title: props.username || 'Default Title',
+					text: 'Disponible en',
 				},
 				scene4Duration: 120,
 				scene4Props: {
-						storeName: props.username || 'Test Store',
-						productName: props.productName || 'Product',
-						price: props.price || 189,
-						title: props.username || 'HYPETHECLOSES',
-						logo: './public/logo2.png',
-						isProduct: isProduct,
+					storeName: props.username || 'Test Store',
+					productName: props.productName || 'Product',
+					price: props.price || 189,
+					title: props.username || 'HYPETHECLOSES',
+					logo: './public/logo2.png',
+					isProduct: isProduct,
 				},
-		};
+			};
 
-		console.log("Input Props for Schema:", inputPropsForSchema);
-		console.log("Main Schema Definition:", MainSchema.shape);
+			console.log("Input Props for Schema:", inputPropsForSchema);
+			console.log("Main Schema Definition:", MainSchema.shape);
 
-		// Validate props against schema
-		const validationResult = MainSchema.safeParse(inputPropsForSchema);
-		if (!validationResult.success) {
+			// Validate props against schema
+			const validationResult = MainSchema.safeParse(inputPropsForSchema);
+			if (!validationResult.success) {
 				console.error("Props validation failed:", validationResult.error.errors);
 				throw new Error("Input props do not match schema");
+			}
+			
+			validInputProps = validationResult.data;
 		}
 
 		const compositionId = video;
-
 		const videoId = typeof props.uid === "undefined" ? props.id : props.uid;
 		const videoFolder = this.getVideoFolder(compositionId, videoId);
 		const composition = this.compositions.find((c) => c.id === compositionId);
 
 		if (composition == null) {
-				throw new Error(`[${Utils.currentDate}] Failed to find composition ${compositionId}`);
+			throw new Error(`[${Utils.currentDate}] Failed to find composition ${compositionId}`);
 		}
 
 		const { width, height, fps, durationInFrames } = composition;
 		console.log("Composition:", composition, "Width:", width, "Height:", height, "FPS:", fps, "Duration in Frames:", durationInFrames);
 
 		if (typeof width !== 'number' || typeof height !== 'number') {
-				throw new Error(`[${Utils.currentDate}] Composition ${compositionId} is missing width or height.`);
+			throw new Error(`[${Utils.currentDate}] Composition ${compositionId} is missing width or height.`);
 		}
 
 		try {
-				await fs.promises.mkdir(videoFolder);
+			await fs.promises.mkdir(videoFolder);
 		} catch (e) {
-				console.error(`Error creating folder ${videoFolder}:`, e);
+			console.error(`Error creating folder ${videoFolder}:`, e);
 		}
 
 		const { assetsInfo } = await renderFrames({
-				composition,
-				serveUrl: this.bundled,
-				inputProps: validationResult.data,
-				outputDir: videoFolder,
-				imageFormat: 'jpeg',
+			composition,
+			serveUrl: this.bundled,
+			inputProps: validInputProps,
+			outputDir: videoFolder,
+			imageFormat: 'jpeg',
 		});
 
 		const finalOutput = path.join(this.folder, `${videoId}.mp4`);
 
 		await stitchFramesToVideo({
-				dir: videoFolder,
-				fps: composition.fps,
-				height: composition.height,
-				width: composition.width,
-				outputLocation: finalOutput,
-				imageFormat: 'jpeg',
-				assetsInfo,
-				serveUrl: this.bundled,
+			dir: videoFolder,
+			fps: composition.fps,
+			height: composition.height,
+			width: composition.width,
+			outputLocation: finalOutput,
+			imageFormat: 'jpeg',
+			assetsInfo,
+			serveUrl: this.bundled,
 		});
 
 		fs.promises.rm(videoFolder, { recursive: true });
@@ -405,8 +476,12 @@ serverRenderer.setup().then(() => {
 			'',
 			`http://localhost:${port}/instagram-video/?id=44&username=yordi&showPriceTag=true`,
 			'',
-			'This: ',
-			`http://localhost:3000/instagram-video/?video=3&query=eyJpZCI6MTU5NiwicHJvZHVjdE5hbWUiOiJWZXN0aWRvIHRpcG8gYW50ZSBjb24gYWd1amV0YXMgeSBib2xzYXMiLCJwcmljZSI6IjE4MCIsInVzZXJuYW1lIjoiaHlwZXRoZWNsb3NldCIsInBob3RvcyI6WyJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8xLzUvOS8xNTk2L3RyYW5zcGFyZW50XzE2NTA0MTU1Njc0NTMucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMS81LzkvMTU5Ni90cmFuc3BhcmVudF8xNjUwNDE1NTY3OTM0LnBuZyIsImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzEvNS85LzE1OTYvdHJhbnNwYXJlbnRfMTY1MDQxNTU2ODQwMy5wbmciXSwic3R5bGUiOjEsImZvbnRGYW1pbHkiOiJIdXNzYXIgRWtvbG9naWN6bmUifQ%3D%3D`,
+			'Examples for different templates:',
+			`http://localhost:${port}/instagram-video/?video=3&query=eyJpZCI6MTU5NiwicHJvZHVjdE5hbWUiOiJWZXN0aWRvIHRpcG8gYW50ZSBjb24gYWd1amV0YXMgeSBib2xzYXMiLCJwcmljZSI6IjE4MCIsInVzZXJuYW1lIjoiaHlwZXRoZWNsb3NldCIsInBob3RvcyI6WyJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8xLzUvOS8xNTk2L3RyYW5zcGFyZW50XzE2NTA0MTU1Njc0NTMucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMS81LzkvMTU5Ni90cmFuc3BhcmVudF8xNjUwNDE1NTY3OTM0LnBuZyIsImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzEvNS85LzE1OTYvdHJhbnNwYXJlbnRfMTY1MDQxNTU2ODQwMy5wbmciXSwic3R5bGUiOjEsImZvbnRGYW1pbHkiOiJIdXNzYXIgRWtvbG9naWN6bmUifQ%3D%3D`,
+			'',
+			`http://localhost:${port}/instagram-video/?video=4&query=eyJpZCI6MTU5NiwicHJvZHVjdE5hbWUiOiJQcm9kdWN0byBlaGplbXBsbyIsInByaWNlIjoiMTk5IiwidXNlcm5hbWUiOiJMb2xhU3RvcmUiLCJwaG90b3MiOlsiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMS81LzkvMTU5Ni90cmFuc3BhcmVudF8xNjUwNDE1NTY3NDUzLnBuZyIsImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzEvNS85LzE1OTYvdHJhbnNwYXJlbnRfMTY1MDQxNTU2NzkzNC5wbmciLCJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8xLzUvOS8xNTk2L3RyYW5zcGFyZW50XzE2NTA0MTU1Njg0MDMucG5nIl0sInR5cGUiOjB9`,
+			'',
+			`http://localhost:${port}/instagram-video/?video=5&query=eyJpZCI6MTU5NiwicHJvZHVjdE5hbWUiOiJTbGlkaW5nIEdhbGxlcnkiLCJwcmljZSI6IjI5OSIsInVzZXJuYW1lIjoiTG9sYVN0b3JlIiwicGhvdG9zIjpbImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzEvNS85LzE1OTYvdHJhbnNwYXJlbnRfMTY1MDQxNTU2NzQ1My5wbmciLCJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8xLzUvOS8xNTk2L3RyYW5zcGFyZW50XzE2NTA0MTU1Njc5MzQucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMS81LzkvMTU5Ni90cmFuc3BhcmVudF8xNjUwNDE1NTY4NDAzLnBuZyJdLCJ0eXBlIjowfQ==`,
 			'',
 		].join('\n')
 	);

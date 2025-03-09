@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { FontFamily } from './lib/fontFamily';
 import { zColor } from '@remotion/zod-types';
+import { ComponentType } from 'react';
 
 export const Fonts = z.object({
   primary: FontFamily,
@@ -41,3 +42,14 @@ export const ColorEnum = z.enum([
 export const ColorHex = z.custom<`#${string}`>((val: any) => /^#[0-9A-F]{6}$/i.test(val));
 export const Color = z.union([ColorHex, ColorEnum]);
 export type Color = z.infer<typeof Color>;
+
+export interface VideoTemplate {
+  id: string;
+  component: ComponentType<any>;
+  schema: z.ZodType<any>;
+  fps: number;
+  width: number;
+  height: number;
+  durationInFrames: number;
+  defaultProps: any;
+}

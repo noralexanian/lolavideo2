@@ -1,0 +1,57 @@
+
+* {
+  box-sizing: border-box;
+}
+
+.sticker {
+  --shine-angle: 15deg;
+  display: inline-grid;
+  grid-template-areas: "text";
+  place-items: center;
+  font-family: "Alegreya Sans SC", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 5rem;
+  text-transform: uppercase;
+
+  span {
+    background-color: black;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 0.01em rgba(0, 0, 0, 0.6);
+  }
+
+  & > *,
+  &::before,
+  &::after {
+    grid-area: text;
+  }
+
+  &::before,
+  &::after {
+    content: attr(data-text);
+    color: #fff;
+  }
+
+  &.purple::before,
+  &.purple::after {
+    color: #716ac4 !important;
+  }
+
+  &::before {
+    -webkit-text-stroke: 0.21em white;
+  }
+  &.bold::before {
+    -webkit-text-stroke: 0.4em white;
+  }
+
+  &.purple::before {
+    -webkit-text-stroke: 0.41em #716ac4 !important;
+  }
+
+  &::after {
+    text-shadow: 0.07em 0.08em 0.05em rgba(0, 0, 0, 0.75),
+    -0.07em -0.05em 0.05em rgba(0, 0, 0, 0.75);
+    z-index: -2;
+  }
+}
