@@ -4,6 +4,7 @@ import { Video2Template } from './Video2';
 import { Video3Template } from './Video3';
 import { Video4Template } from './Video4';
 import { Video5Template } from './Video5';
+import { Video6Template } from './Video6';
 
 export const templates: VideoTemplate[] = [
   Video1Template,
@@ -11,6 +12,7 @@ export const templates: VideoTemplate[] = [
   Video3Template,
   Video4Template,
   Video5Template,
+  Video6Template,
 ];
 
 export function getTemplateById(id: string): VideoTemplate | undefined {
