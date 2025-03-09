@@ -107,13 +107,13 @@ class ServerRenderer {
 			
 			// Determine min required photos based on template
 			let minRequiredPhotos;
-if (video === 'Video5') {
-	minRequiredPhotos = 11;
-} else if (video === 'Video6') {
-	minRequiredPhotos = 7; // Video6 needs exactly 7 images
-} else { // Video4
-	minRequiredPhotos = 8;
-}
+			if (video === 'Video5') {
+				minRequiredPhotos = 11;
+			} else if (video === 'Video6') {
+				minRequiredPhotos = 7; // Video6 needs exactly 7 images
+			} else { // Video4
+				minRequiredPhotos = 8;
+			}
 			
 			// Ensure we have enough photos
 			if (props.photos.length < minRequiredPhotos) {
@@ -459,8 +459,10 @@ app.get('/instagram-video/', async (req, res) => {
 		videoType = 'Video3'; // Example default
 		}
 
-		const cacheKey = JSON.stringify({ ...req.query, videoType });
-		// const cacheKey = JSON.stringify({ props, videoType });
+		// Create a cache key that includes both the props AND the videoType explicitly
+		// This ensures that same props with different templates don't collide in cache
+		const cacheKey = JSON.stringify({ propsDigest: JSON.stringify(props), videoType });
+		console.log(`Using cache key with videoType: ${videoType}`);
 
 		if (cache.has(cacheKey)) {
 			console.log("File available from cache");
