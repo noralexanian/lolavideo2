@@ -131,13 +131,33 @@ class ServerRenderer {
 			}
 
 			// Set up template-specific props
-			inputPropsForSchema = {
-				images: props.photos || [],
-				username: props.username || 'Default Store',
-				productName: props.productName || 'Product',
-				price: props.price ? props.price.toString() : '199',
-				type: props.type || TYPE_PRODUCT,
-			};
+			// inputPropsForSchema = {
+			// 	images: props.photos || [],
+			// 	username: props.username || 'Default Store',
+			// 	productName: props.productName || 'Product',
+			// 	price: props.price ? props.price.toString() : '199',
+			// 	type: props.type || TYPE_PRODUCT,
+			// };
+
+			// Set up template-specific props
+			// if products is greater than 1, do not display product name or price
+			if (props.products.length > 1) {
+				inputPropsForSchema = {
+					images: props.photos || [],
+					username: props.username || 'Default Store',
+					productName: '',
+					price: '',
+					type: props.type || TYPE_PRODUCT,
+				};
+			} else {
+				inputPropsForSchema = {
+					images: props.photos || [],
+					username: props.username || 'Default Store',
+					productName: props.productName || 'Product',
+					price: props.price ? props.price.toString() : '199',
+					type: props.type || TYPE_PRODUCT,
+				};
+			}
 
 			// Validate props against appropriate schema
 			let validationResult;

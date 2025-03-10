@@ -10,7 +10,7 @@ export const Video6Template: VideoTemplate = {
   fps: FPS,
   width: WIDTH,
   height: HEIGHT,
-  durationInFrames: 450, // This is approximate, the component calculates actual duration dynamically
+  durationInFrames: 250, // This is approximate, the component calculates actual duration dynamically
   defaultProps: {
     images: [
       'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416515823.png',
