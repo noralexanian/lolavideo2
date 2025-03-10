@@ -141,7 +141,7 @@ class ServerRenderer {
 
 			// Set up template-specific props
 			// if products is greater than 1, do not display product name or price
-			if (props.products.length > 1) {
+			if (props.type == TYPE_SHOP && props.products.length > 1) {
 				inputPropsForSchema = {
 					images: props.photos || [],
 					username: props.username || 'Default Store',
