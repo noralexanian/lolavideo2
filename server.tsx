@@ -26,6 +26,7 @@ import { Video5Schema } from './src/Video5Schema';
 import { Video6Schema } from './src/Video6Schema';
 import { Video7Schema } from './src/Video7Schema';
 import { Video8Schema } from './src/Video8Schema';
+import { Video9Schema } from './src/Video9Schema';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -100,8 +101,8 @@ class ServerRenderer {
 		let inputPropsForSchema: any;
 		let validInputProps: any;
 
-		// Check if this is Video4, Video5, Video6, Video7, or Video8 template
-		if (video === 'Video4' || video === 'Video5' || video === 'Video6' || video === 'Video7' || video === 'Video8') {
+		// Check if this is Video4, Video5, Video6, Video7, Video8, or Video9 template
+		if (video === 'Video4' || video === 'Video5' || video === 'Video6' || video === 'Video7' || video === 'Video8' || video === 'Video9') {
 			// Prepare photos array for templates
 			if (!props.photos) {
 				props.photos = [];
@@ -117,6 +118,8 @@ class ServerRenderer {
 				minRequiredPhotos = 6; // Video7 needs exactly 6 images
 			} else if (video === 'Video8') {
 				minRequiredPhotos = 5; // Video8 needs exactly 5 images
+			} else if (video === 'Video9') {
+				minRequiredPhotos = 4; // Video9 needs exactly 4 images
 			} else { // Video4
 				minRequiredPhotos = 8;
 			}
@@ -144,6 +147,11 @@ class ServerRenderer {
 			// For Video8, trim to exactly 5 images if there are more
 			if (video === 'Video8' && props.photos.length > 5) {
 				props.photos = props.photos.slice(0, 5);
+			}
+
+			// For Video9, trim to exactly 4 images if there are more
+			if (video === 'Video9' && props.photos.length > 4) {
+				props.photos = props.photos.slice(0, 4);
 			}
 
 			// Set up template-specific props
@@ -201,11 +209,17 @@ class ServerRenderer {
 					console.error("Props validation failed for Video7:", validationResult.error.errors);
 					throw new Error("Input props do not match schema for Video7");
 				}
-			} else { // Video8
+			} else if (video === 'Video8') {
 				validationResult = Video8Schema.safeParse(inputPropsForSchema);
 				if (!validationResult.success) {
 					console.error("Props validation failed for Video8:", validationResult.error.errors);
 					throw new Error("Input props do not match schema for Video8");
+				}
+			} else { // Video9
+				validationResult = Video9Schema.safeParse(inputPropsForSchema);
+				if (!validationResult.success) {
+					console.error("Props validation failed for Video9:", validationResult.error.errors);
+					throw new Error("Input props do not match schema for Video9");
 				}
 			}
 			
@@ -557,6 +571,8 @@ serverRenderer.setup().then(() => {
 		`http://localhost:${port}/instagram-video/?video=7&query=eyJpZCI6MTU5NiwicHJvZHVjdE5hbWUiOiJNb3JwaGluZyBHYWxsZXJ5IiwicHJpY2UiOiIxOTkiLCJ1c2VybmFtZSI6IkxvbGFTdG9yZSIsInBob3RvcyI6WyJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8yLzIvMi8yMjIxMjkvbWVkaXVtXzE3MjE0MTY1MTU4MjMucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMi8yLzIvMjIyMTI5L21lZGl1bV8xNzIxNDE2NTE2NTEzLnBuZyIsImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzIvMi8wLzIyMDMyOC9tZWRpdW1fMTcyMDU0NzkwNDU3My5wbmciLCJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8yLzIvMC8yMjAzMjgvbWVkaXVtXzE3MjA1NDc5MDUzNTQucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMi8yLzAvMjIwMzI3L21lZGl1bV8xNzIwNTQ3ODMwODI2LnBuZyIsImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzIvMi8wLzIyMDMyNy9tZWRpdW1fMTcyMDU0NzgzMTUxNC5wbmciXSwidHlwZSI6MH0%3D`,
 		'',
 		`http://localhost:${port}/instagram-video/?video=8&query=eyJpZCI6MTU5NiwicHJvZHVjdE5hbWUiOiJNYWduZXRpYyBHYWxsZXJ5IiwicHJpY2UiOiIxNDkiLCJ1c2VybmFtZSI6IkxvbGFTdG9yZSIsInBob3RvcyI6WyJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8yLzIvMi8yMjIxMjkvbWVkaXVtXzE3MjE0MTY1MTU4MjMucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMi8yLzIvMjIyMTI5L21lZGl1bV8xNzIxNDE2NTE2NTEzLnBuZyIsImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzIvMi8wLzIyMDMyOC9tZWRpdW1fMTcyMDU0NzkwNDU3My5wbmciLCJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8yLzIvMC8yMjAzMjgvbWVkaXVtXzE3MjA1NDc5MDUzNTQucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMi8yLzAvMjIwMzI3L21lZGl1bV8xNzIwNTQ3ODMwODI2LnBuZyJdLCJ0eXBlIjowfQ==`,
+		'',
+		`http://localhost:${port}/instagram-video/?video=9&query=eyJpZCI6MTU5NiwicHJvZHVjdE5hbWUiOiJTcGlyYWwgR2FsbGVyeSIsInByaWNlIjoiMTI5IiwidXNlcm5hbWUiOiJMb2xhU3RvcmUiLCJwaG90b3MiOlsiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMi8yLzIvMjIyMTI5L21lZGl1bV8xNzIxNDE2NTE1ODIzLnBuZyIsImh0dHBzOi8vbG9sYXBheS1wcm9kdWN0cy5zMy5hbWF6b25hd3MuY29tLzIvMi8yLzIyMjEyOS9tZWRpdW1fMTcyMTQxNjUxNjUxMy5wbmciLCJodHRwczovL2xvbGFwYXktcHJvZHVjdHMuczMuYW1hem9uYXdzLmNvbS8yLzIvMC8yMjAzMjgvbWVkaXVtXzE3MjA1NDc5MDQ1NzMucG5nIiwiaHR0cHM6Ly9sb2xhcGF5LXByb2R1Y3RzLnMzLmFtYXpvbmF3cy5jb20vMi8yLzAvMjIwMzI4L21lZGl1bV8xNzIwNTQ3OTA1MzU0LnBuZyJdLCJ0eXBlIjowfQ==`,
 		'',
 		].join('\n')
 	);

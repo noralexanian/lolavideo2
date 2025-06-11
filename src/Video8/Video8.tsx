@@ -77,7 +77,6 @@ export const Video8: React.FC<{
 
   // Calculate magnetic attraction state
   const currentCycle = Math.floor(frame / magneticCycleDuration);
-  const cycleProgress = (frame % magneticCycleDuration) / magneticCycleDuration;
   
   // Alternate between attraction (true) and repulsion (false)
   const isAttracting = currentCycle % 2 === 0;
