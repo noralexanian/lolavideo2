@@ -9,8 +9,8 @@ import {
   Sequence,
   getInputProps,
 } from 'remotion';
-import FinalScene from '../Video6/FinalScene';
-import { BottomBar } from '../Video6/BottomBar';
+import { FinalScene3 } from '../Video7/FinalScene3';
+import { BottomBar3 } from '../Video7/BottomBar3';
 
 export const Video8: React.FC<{
   images: string[];
@@ -63,29 +63,29 @@ export const Video8: React.FC<{
   const { fps, width, height, durationInFrames } = useVideoConfig();
   const frame = useCurrentFrame();
 
-  // Animation timing - keep under 8 seconds (240 frames at 30fps)
+  // Animation timing - slowed down significantly
   const bottomBarHeight = 60;
-  const magneticCycleDuration = fps * 1.5; // 1.5 seconds per magnetic cycle
-  const totalCycles = 3; // 3 attraction/repulsion cycles
-  const totalMagneticDuration = magneticCycleDuration * totalCycles; // 4.5 seconds
-  const finalSceneStartFrame = Math.min(totalMagneticDuration + fps * 0.5, durationInFrames - fps * 2); // Leave 2 seconds for final scene
+  const magneticCycleDuration = fps * 2.5; // Increased from 1.5 to 2.5 seconds per magnetic cycle
+  const totalCycles = 2; // Reduced from 3 to 2 cycles to make room for longer final scene
+  const totalMagneticDuration = magneticCycleDuration * totalCycles; // Now 5 seconds instead of 4.5
+  const finalSceneStartFrame = totalMagneticDuration; // Start final scene immediately after magnetic animation
 
   // Magnetic physics simulation
   const centerX = width / 2;
   const centerY = (height - bottomBarHeight) / 2;
   const imageSize = 140;
 
-  // Calculate magnetic attraction state
-  const currentCycle = Math.floor(frame / magneticCycleDuration);
+  // Calculate magnetic attraction state - no cycling, just run the animation once and stop
+  const currentCycle = Math.min(Math.floor(frame / magneticCycleDuration), totalCycles - 1);
   
   // Alternate between attraction (true) and repulsion (false)
   const isAttracting = currentCycle % 2 === 0;
   
-  // Spring-based physics for smooth movement
+  // Spring-based physics for smooth movement - slower damping for more fluid motion
   const magneticForce = spring({
     fps,
     frame: frame % magneticCycleDuration,
-    config: { damping: 8, stiffness: 60, mass: 1.2 },
+    config: { damping: 12, stiffness: 40, mass: 1.5 }, // Increased damping and mass, reduced stiffness for slower movement
   });
 
   // Calculate positions for each image
@@ -125,25 +125,25 @@ export const Video8: React.FC<{
       targetRotation = interpolate(magneticForce, [0, 1], [0, -180]);
     }
 
-    // Add some oscillation for more dynamic movement
-    const oscillation = Math.sin(frame / 15 + index) * 10;
+    // Add some oscillation for more dynamic movement - slower oscillation
+    const oscillation = Math.sin(frame / 25 + index) * 10; // Increased from 15 to 25 for slower oscillation
     
     return {
       x: targetX + oscillation,
       y: targetY + oscillation * 0.5,
       scale: targetScale,
       rotation: targetRotation,
-      opacity: interpolate(frame, [0, fps * 0.3], [0, 1], {
+      opacity: interpolate(frame, [0, fps * 0.5], [0, 1], {
         extrapolateLeft: 'clamp',
         extrapolateRight: 'clamp',
       }),
     };
   };
 
-  // Product name animation
+  // Product name animation - longer fade duration
   const titleOpacity = interpolate(
     frame,
-    [0, fps * 0.5, totalMagneticDuration - fps * 0.5, totalMagneticDuration],
+    [0, fps * 0.8, totalMagneticDuration - fps * 0.8, totalMagneticDuration],
     [0, 1, 1, 0],
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   );
@@ -151,7 +151,7 @@ export const Video8: React.FC<{
   const titleScale = spring({
     fps,
     frame,
-    config: { damping: 15, stiffness: 100, mass: 1 },
+    config: { damping: 20, stiffness: 60, mass: 1.2 }, // Slower spring animation
   });
 
   const showFinalScene = frame >= finalSceneStartFrame;
@@ -163,7 +163,7 @@ export const Video8: React.FC<{
     }}>
       {/* Bottom Bar */}
       <Sequence from={0} layout="none" durationInFrames={durationInFrames}>
-        <BottomBar username={username} productName={productName} price={price} type={type} />
+        <BottomBar3 username={username} productName={productName} price={price} type={type} />
       </Sequence>
 
       {!showFinalScene && (
@@ -273,13 +273,12 @@ export const Video8: React.FC<{
         </>
       )}
 
-      {/* Final scene */}
+      {/* Final scene - using Video7's FinalScene3 */}
       {showFinalScene && (
-        <FinalScene
+        <FinalScene3
           username={username}
           productName={productName}
-          price={`$${price}`}
-          storeURL={storeURL}
+          price={price}
           type={type}
         />
       )}
