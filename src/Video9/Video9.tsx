@@ -6,7 +6,6 @@ import {
   useCurrentFrame,
   interpolate,
   spring,
-  Sequence,
   getInputProps,
   staticFile,
 } from 'remotion';
@@ -58,7 +57,7 @@ export const Video9: React.FC<{
     type,
   });
 
-  const { fps, width, height, durationInFrames } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const frame = useCurrentFrame();
 
   // Animation timing - keep under 8 seconds (240 frames at 30fps)
