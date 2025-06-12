@@ -62,7 +62,6 @@ export const Video8: React.FC<{
     type,
   });
 
-  const storeURL = "lolapay.com/" + username;
   const { fps, width, height, durationInFrames } = useVideoConfig();
   const frame = useCurrentFrame();
 

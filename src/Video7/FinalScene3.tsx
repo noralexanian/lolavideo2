@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, useVideoConfig, useCurrentFrame, interpolate, Img, staticFile, spring} from 'remotion';
+import {AbsoluteFill, useVideoConfig, useCurrentFrame, interpolate, Img, staticFile} from 'remotion';
 
 interface FinalScene3Props {
   username: string;

@@ -7,7 +7,6 @@ import {
   interpolate,
   spring,
   getInputProps,
-  staticFile,
 } from 'remotion';
 import { FinalScene3 } from '../Video7/FinalScene3';
 import { BottomBar3 } from '../Video7/BottomBar3';
@@ -151,12 +150,6 @@ export const Video9: React.FC<{
 
   // Final scene with simple transition
   const showFinalScene = frame >= finalSceneStartFrame;
-  const finalSceneOpacity = interpolate(
-    frame,
-    [finalSceneStartFrame, finalSceneStartFrame + fps * 0.3],
-    [0, 1],
-    { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-  );
 
   return (
     <AbsoluteFill style={{ 

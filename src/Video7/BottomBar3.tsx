@@ -90,19 +90,22 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
       )}
 
       <div style={containerStyle}>
-        <div style={{
-          marginBottom: '18px',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          zIndex: 2,
-          width: '100%',
-          padding: '0 60px',
-          boxSizing: 'border-box' as const,
-        }}>
-          <div style={bottomInfoStyle}>
-            {type === 0 ? productName : username}
+        {/* Only show product name above the bottom bar for product type */}
+        {type === 0 && (
+          <div style={{
+            marginBottom: '18px',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            zIndex: 2,
+            width: '100%',
+            padding: '0 60px',
+            boxSizing: 'border-box' as const,
+          }}>
+            <div style={bottomInfoStyle}>
+              {productName}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Bottom Bar */}
         <div style={bottomBarStyle}>
