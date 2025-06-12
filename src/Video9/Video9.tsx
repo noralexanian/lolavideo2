@@ -9,7 +9,8 @@ import {
   getInputProps,
   staticFile,
 } from 'remotion';
-import { Footer } from '../components/Footer';
+import { FinalScene3 } from '../Video7/FinalScene3';
+import { BottomBar3 } from '../Video7/BottomBar3';
 
 export const Video9: React.FC<{
   images: string[];
@@ -194,7 +195,7 @@ export const Video9: React.FC<{
             />
           ))}
 
-          {/* Product name or store name */}
+          {/* Username at the top */}
           <div
             style={{
               position: 'absolute',
@@ -211,30 +212,8 @@ export const Video9: React.FC<{
               zIndex: 20,
             }}
           >
-            {type === 0 ? productName : username}
+            {username}
           </div>
-
-          {/* Price badge - only show for products */}
-          {type === 0 && (
-            <div
-              style={{
-                position: 'absolute',
-                right: '20px',
-                top: '20px',
-                padding: '10px 20px',
-                background: 'rgba(255,255,255,0.9)',
-                color: '#8360c3',
-                borderRadius: '25px',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
-                transform: `scale(${titleAnimation})`,
-                zIndex: 15,
-              }}
-            >
-              ${price}
-            </div>
-          )}
 
           {/* Spiraling images */}
           {images.map((src, index) => {
@@ -268,85 +247,17 @@ export const Video9: React.FC<{
         </>
       )}
 
-      {/* Footer (reused from Video3 style) */}
-      <Footer store={username} logo={staticFile('logo.png')} theme="White" />
+      {/* Bottom Bar (shared with Video7/8) */}
+      <BottomBar3 username={username} productName={productName} price={price} type={type} />
 
       {/* Final scene */}
       {showFinalScene && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: 'linear-gradient(135deg, #8360c3 0%, #2ebf91 100%)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: finalSceneOpacity,
-            zIndex: 30,
-          }}
-        >
-          <div
-            style={{
-              fontSize: '48px',
-              fontWeight: 'bold',
-              color: 'white',
-              textAlign: 'center',
-              marginBottom: '20px',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-            }}
-          >
-            {username}
-          </div>
-          {type === 0 && (
-            <>
-              <div
-                style={{
-                  fontSize: '36px',
-                  color: 'rgba(255,255,255,0.9)',
-                  textAlign: 'center',
-                  marginBottom: '15px',
-                }}
-              >
-                {productName}
-              </div>
-              <div
-                style={{
-                  fontSize: '42px',
-                  fontWeight: 'bold',
-                  color: '#ffffff',
-                  textAlign: 'center',
-                  marginBottom: '40px',
-                }}
-              >
-                ${price}
-              </div>
-            </>
-          )}
-          <div
-            style={{
-              fontSize: '24px',
-              color: 'rgba(255,255,255,0.8)',
-              textAlign: 'center',
-              marginBottom: '10px',
-            }}
-          >
-            DISPONIBLE EN
-          </div>
-          <div
-            style={{
-              fontSize: '28px',
-              fontWeight: 'bold',
-              color: 'white',
-              textAlign: 'center',
-            }}
-          >
-            lolapay.com/{username}
-          </div>
-        </div>
+        <FinalScene3
+          username={username}
+          productName={productName}
+          price={price}
+          type={type}
+        />
       )}
     </AbsoluteFill>
   );
