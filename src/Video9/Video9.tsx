@@ -194,7 +194,7 @@ export const Video9: React.FC<{
             />
           ))}
 
-          {/* Product name */}
+          {/* Product name or store name */}
           <div
             style={{
               position: 'absolute',
@@ -211,28 +211,30 @@ export const Video9: React.FC<{
               zIndex: 20,
             }}
           >
-            {productName}
+            {type === 0 ? productName : username}
           </div>
 
-          {/* Price badge */}
-          <div
-            style={{
-              position: 'absolute',
-              right: '20px',
-              top: '20px',
-              padding: '10px 20px',
-              background: 'rgba(255,255,255,0.9)',
-              color: '#8360c3',
-              borderRadius: '25px',
-              fontSize: '24px',
-              fontWeight: 'bold',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
-              transform: `scale(${titleAnimation})`,
-              zIndex: 15,
-            }}
-          >
-            ${price}
-          </div>
+          {/* Price badge - only show for products */}
+          {type === 0 && (
+            <div
+              style={{
+                position: 'absolute',
+                right: '20px',
+                top: '20px',
+                padding: '10px 20px',
+                background: 'rgba(255,255,255,0.9)',
+                color: '#8360c3',
+                borderRadius: '25px',
+                fontSize: '24px',
+                fontWeight: 'bold',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
+                transform: `scale(${titleAnimation})`,
+                zIndex: 15,
+              }}
+            >
+              ${price}
+            </div>
+          )}
 
           {/* Spiraling images */}
           {images.map((src, index) => {
