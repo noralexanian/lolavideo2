@@ -61,6 +61,7 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     boxShadow: '0 -10px 30px rgba(0, 0, 0, 0.15)',
     zIndex: 10,
     backdropFilter: 'blur(10px)',
+    justifyContent: 'space-between',
   };
 
   const containerStyle = {
@@ -108,9 +109,9 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
           <Img 
             src={staticFile('assets/logo.png')} 
             style={{  
-              width: '140px', 
-              marginLeft: '20px',
-              marginRight: '20px',
+              width: '80px',
+              marginLeft: '16px',
+              marginRight: '16px',
               filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
             }}
             onError={(e) => {
@@ -120,11 +121,11 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
           />
           <span 
             style={{ 
-              fontSize: '22px', 
+              fontSize: '16px',
               fontFamily: 'Arial, sans-serif',
               color: '#333',
               marginLeft: 'auto',
-              marginRight: '20px',
+              marginRight: '16px',
               fontWeight: '500',
               textShadow: '0 1px 2px rgba(0,0,0,0.1)'
             }}
