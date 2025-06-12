@@ -20,7 +20,7 @@ export const Video8Template: VideoTemplate = {
       'https://lolapay-products.s3.amazonaws.com/2/2/0/220327/medium_1720547830826.png',
     ],
     username: 'LolaStore',
-    productName: 'Magnetic Gallery',
+    productName: 'Product Example',
     price: '149',
     type: 0, // 0 for product, 1 for shop
   },

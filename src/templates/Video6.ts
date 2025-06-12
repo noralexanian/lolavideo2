@@ -22,7 +22,7 @@ export const Video6Template: VideoTemplate = {
       'https://lolapay-products.s3.amazonaws.com/2/2/0/220326/medium_1720547754921.png',
     ],
     username: 'LolaStore',
-    productName: 'Pop-up Gallery',
+    productName: 'Product Example',
     price: '399',
     type: 0, // 0 for product, 1 for shop
   },
