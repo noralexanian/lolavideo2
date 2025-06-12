@@ -9,8 +9,11 @@ import {
   Sequence,
   getInputProps,
 } from 'remotion';
+import { loadFont } from "@remotion/google-fonts/Anton";
 import { FinalScene3 } from './FinalScene3';
 import { BottomBar3 } from './BottomBar3';
+
+const { fontFamily: antonFont } = loadFont();
 
 export const Video7: React.FC<{
   images: string[];
@@ -65,10 +68,15 @@ export const Video7: React.FC<{
 
   // Animation timing - keep under 10 seconds (300 frames at 30fps)
   const bottomBarHeight = 60;
-  const cardTransitionDuration = fps * 0.8; // 0.8 seconds per transition
-  const cardHoldDuration = fps * 0.4; // 0.4 seconds hold time
-  const totalCardCycleDuration = (cardTransitionDuration + cardHoldDuration) * images.length;
-  const finalSceneStartFrame = Math.min(totalCardCycleDuration, durationInFrames - fps * 2); // Leave 2 seconds for final scene
+  const cardTransitionDuration = fps * 1.5; // 1.5 seconds per transition (slightly faster)
+  const cardHoldDuration = fps * 1.0; // 1.0 seconds hold time (slightly faster)
+  const singleCardDuration = cardTransitionDuration + cardHoldDuration;
+  const totalCardCycleDuration = singleCardDuration * images.length;
+  
+  // Simple, reliable approach: Start final scene at the beginning of the last card's hold phase
+  // This guarantees the card is stable (not rotating) when final scene starts
+  const lastCardTransitionEnd = (images.length - 1) * singleCardDuration + cardTransitionDuration;
+  const finalSceneStartFrame = Math.min(lastCardTransitionEnd, durationInFrames - fps * 2);
 
   // Card morphing logic
   const getCurrentCardIndex = () => {
@@ -83,7 +91,14 @@ export const Video7: React.FC<{
     const currentCardProgress = cycleProgress % singleCardDuration;
     
     if (currentCardProgress <= cardTransitionDuration) {
-      return currentCardProgress / cardTransitionDuration;
+      const linearProgress = currentCardProgress / cardTransitionDuration;
+      // Apply smooth easing function for more natural movement
+      return interpolate(
+        linearProgress,
+        [0, 1],
+        [0, 1],
+        { easing: (t) => t * t * (3 - 2 * t) } // Smooth hermite interpolation
+      );
     }
     return 1; // Hold phase
   };
@@ -105,40 +120,40 @@ export const Video7: React.FC<{
     config: { damping: 12, stiffness: 80, mass: 1 },
   });
 
-  // Morphing effect
+  // Morphing effect - much smoother and more elegant
   const morphRotation = interpolate(
     transitionProgress,
-    [0, 0.5, 1],
-    [0, 180, 360],
+    [0, 1],
+    [0, 180], // Only 180 degrees for a clean flip
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   );
 
   const morphScale = interpolate(
     transitionProgress,
-    [0, 0.25, 0.75, 1],
-    [1, 1.1, 1.1, 1],
+    [0, 0.15, 0.85, 1],
+    [1, 1.05, 1.05, 1], // Gentler scaling
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   );
 
-  // Floating particles effect
-  const particles = Array.from({ length: 8 }, (_, i) => {
-    const particleFrame = frame - i * (fps / 8);
+  // Floating particles effect - gentler and more mesmerizing
+  const particles = Array.from({ length: 6 }, (_, i) => {
+    const particleFrame = frame - i * (fps / 6);
     const particleSpring = spring({
       fps,
       frame: particleFrame,
-      config: { damping: 15, stiffness: 50, mass: 0.8 },
+      config: { damping: 20, stiffness: 30, mass: 1.2 }, // Softer movement
     });
 
-    const angle = (i / 8) * Math.PI * 2;
-    const radius = 100 + Math.sin(frame / 20) * 20;
+    const angle = (i / 6) * Math.PI * 2 + frame / 60; // Slower rotation
+    const radius = 120 + Math.sin(frame / 40) * 15; // Gentler breathing
     const x = cardX + cardWidth / 2 + Math.cos(angle) * radius * particleSpring;
     const y = cardY + cardHeight / 2 + Math.sin(angle) * radius * particleSpring;
 
     return {
       x,
       y,
-      opacity: interpolate(particleSpring, [0, 0.3, 1], [0, 1, 0.3]),
-      scale: interpolate(particleSpring, [0, 0.5, 1], [0, 1, 0.8]),
+      opacity: interpolate(particleSpring, [0, 0.4, 1], [0, 0.7, 0.4]), // Gentler opacity
+      scale: interpolate(particleSpring, [0, 0.6, 1], [0, 0.8, 0.6]), // Softer scaling
     };
   });
 
@@ -180,7 +195,7 @@ export const Video7: React.FC<{
             />
           ))}
 
-          {/* Product name */}
+          {/* Store name (always show username at top) */}
           <div
             style={{
               position: 'absolute',
@@ -191,12 +206,12 @@ export const Video7: React.FC<{
               fontWeight: 'bold',
               color: 'white',
               textAlign: 'center',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-              fontFamily: 'Arial, sans-serif',
+              textShadow: '0 2px 2px rgba(0,0,0,0.15)',
+              fontFamily: antonFont,
               zIndex: 10,
             }}
           >
-            {productName}
+            {username}
           </div>
 
           {/* Main morphing card */}
@@ -252,25 +267,7 @@ export const Video7: React.FC<{
             />
           </div>
 
-          {/* Price badge */}
-          <div
-            style={{
-              position: 'absolute',
-              right: '20px',
-              top: cardY + 20,
-              background: 'rgba(255,255,255,0.95)',
-              color: '#333',
-              padding: '12px 20px',
-              borderRadius: '25px',
-              fontSize: '24px',
-              fontWeight: 'bold',
-              boxShadow: '0 8px 20px rgba(0,0,0,0.2)',
-              transform: `scale(${cardEntrance})`,
-              zIndex: 5,
-            }}
-          >
-            ${price}
-          </div>
+
         </>
       )}
 
