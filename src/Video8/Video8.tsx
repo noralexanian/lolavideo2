@@ -116,13 +116,15 @@ export const Video8: React.FC<{
       targetX = interpolate(magneticForce, [0, 1], [startX, clusterX]);
       targetY = interpolate(magneticForce, [0, 1], [startY, clusterY]);
       targetScale = interpolate(magneticForce, [0, 0.3, 1], [0.3, 1.2, 0.9]);
-      targetRotation = interpolate(magneticForce, [0, 1], [0, 360]);
+      // Spin during movement but settle upright at the end
+      targetRotation = interpolate(magneticForce, [0, 0.8, 1], [0, 360, 0]);
     } else {
       // Moving away from center (repulsion)
       targetX = interpolate(magneticForce, [0, 1], [clusterX, repelX]);
       targetY = interpolate(magneticForce, [0, 1], [clusterY, repelY]);
       targetScale = interpolate(magneticForce, [0, 0.5, 1], [0.9, 0.7, 1.1]);
-      targetRotation = interpolate(magneticForce, [0, 1], [0, -180]);
+      // Spin during movement but settle upright at the end
+      targetRotation = interpolate(magneticForce, [0, 0.8, 1], [0, -180, 0]);
     }
 
     // Add some oscillation for more dynamic movement - slower oscillation
@@ -200,7 +202,7 @@ export const Video8: React.FC<{
             }}
           />
 
-          {/* Product name or store name */}
+          {/* Shop name/username (always show username) */}
           <div
             style={{
               position: 'absolute',
@@ -217,7 +219,7 @@ export const Video8: React.FC<{
               zIndex: 10,
             }}
           >
-            {type === 0 ? productName : username}
+            {username}
           </div>
 
           {/* Price badge - only show for products */}
