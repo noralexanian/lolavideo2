@@ -11,6 +11,9 @@ import {
 } from 'remotion';
 import { FinalScene3 } from '../Video7/FinalScene3';
 import { BottomBar3 } from '../Video7/BottomBar3';
+import { loadFont } from '@remotion/google-fonts/Anton';
+
+const { fontFamily: antonFont } = loadFont();
 
 export const Video8: React.FC<{
   images: string[];
@@ -209,12 +212,12 @@ export const Video8: React.FC<{
               left: '50%',
               top: '15%',
               transform: `translateX(-50%) scale(${titleScale})`,
-              fontSize: '32px',
+              fontSize: '36px',
               fontWeight: 'bold',
               color: 'white',
               textAlign: 'center',
-              textShadow: '2px 2px 4px rgba(0,0,0,0.7)',
-              fontFamily: 'Arial, sans-serif',
+              textShadow: '0 2px 2px rgba(0,0,0,0.15)',
+              fontFamily: antonFont,
               opacity: titleOpacity,
               zIndex: 10,
             }}
