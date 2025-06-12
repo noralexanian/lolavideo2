@@ -210,7 +210,7 @@ export const Video8: React.FC<{
             style={{
               position: 'absolute',
               left: '50%',
-              top: '15%',
+              top: '7%',
               transform: `translateX(-50%) scale(${titleScale})`,
               fontSize: '36px',
               fontWeight: 'bold',
@@ -224,28 +224,6 @@ export const Video8: React.FC<{
           >
             {username}
           </div>
-
-          {/* Price badge - only show for products */}
-          {type === 0 && (
-            <div
-              style={{
-                position: 'absolute',
-                right: '20px',
-                top: '20px',
-                padding: '10px 20px',
-                background: 'rgba(255,255,255,0.9)',
-                color: '#1e3c72',
-                borderRadius: '25px',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
-                transform: `scale(${titleScale})`,
-                zIndex: 15,
-              }}
-            >
-              ${price}
-            </div>
-          )}
 
           {/* Magnetic images */}
           {images.map((src, index) => {

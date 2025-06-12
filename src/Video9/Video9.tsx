@@ -75,7 +75,7 @@ export const Video9: React.FC<{
   const centerY = height / 2;
   const maxRadius = Math.min(width, height) * 0.4;
   const minRadius = 30;
-  const imageSize = 120;
+  const imageSize = 160;
 
   // Calculate spiral properties for each image
   const getSpiralProperties = (index: number) => {
