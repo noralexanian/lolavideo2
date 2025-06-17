@@ -1,5 +1,4 @@
 import React from 'react';
-import { Img, staticFile } from 'remotion';
 
 interface BottomBar3Props {
   username: string;

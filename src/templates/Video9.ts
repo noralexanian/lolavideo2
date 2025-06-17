@@ -10,7 +10,7 @@ export const Video9Template: VideoTemplate = {
   fps: FPS,
   width: WIDTH,
   height: HEIGHT,
-  durationInFrames: 225, // 7.5 seconds at 30fps - under 8 seconds
+  durationInFrames: 270, // Main animation (5s) + final scenes (4s) = 9 seconds total
   defaultProps: {
     images: [
       'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416515823.png',

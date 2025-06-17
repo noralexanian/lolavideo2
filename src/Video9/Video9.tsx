@@ -6,13 +6,13 @@ import {
   useCurrentFrame,
   interpolate,
   spring,
+  Sequence,
   getInputProps,
 } from 'remotion';
-import { FinalScene3 } from '../Video7/FinalScene3';
+import { FinalScenePart1 } from './FinalScenePart1';
+import { FinalScenePart2 } from './FinalScenePart2';
 import { BottomBar3 } from '../Video7/BottomBar3';
-import { loadFont } from '@remotion/google-fonts/Anton';
 
-const { fontFamily: antonFont } = loadFont();
 
 export const Video9: React.FC<{
   images: string[];
@@ -20,6 +20,7 @@ export const Video9: React.FC<{
   productName: string;
   price: string;
   type: number;
+  logoUrl?: string;
 }> = (defaultProps) => {
   // Get input props which will override default props
   const inputProps = getInputProps() || {};
@@ -28,7 +29,12 @@ export const Video9: React.FC<{
   const props = { ...defaultProps, ...inputProps };
 
   // Extract individual props
-  let { images, username, productName, price, type } = props;
+  let { images, username, productName, price, type, logoUrl } = props;
+
+  // Set default logoUrl if not provided
+  if (!logoUrl) {
+    logoUrl = 'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416515823.png';
+  }
 
   // Ensure we always have exactly 4 images
   if (!images || images.length === 0) {
@@ -60,14 +66,22 @@ export const Video9: React.FC<{
     type,
   });
 
-  const { fps, width, height } = useVideoConfig();
+  const { fps, width, height, durationInFrames } = useVideoConfig();
   const frame = useCurrentFrame();
 
   // Animation timing - keep under 8 seconds (240 frames at 30fps)
   const spiralCycleDuration = fps * 2; // 2 seconds per complete spiral cycle
   const totalSpiralCycles = 2.5; // 2.5 spiral cycles
   const totalSpiralDuration = spiralCycleDuration * totalSpiralCycles; // 5 seconds
-  const finalSceneStartFrame = totalSpiralDuration + fps * 0.5; // Leave 2.5 seconds for final scene
+  
+  // Calculate when main animation ends and final scenes start
+  const mainAnimationEndFrame = totalSpiralDuration; // Keep full original animation duration
+  
+  // Final scene timing - 2 seconds each (added after main animation)
+  const finalScenePart1StartFrame = mainAnimationEndFrame;
+  const finalScenePart1Duration = fps * 2; // 2 seconds
+  const finalScenePart2StartFrame = finalScenePart1StartFrame + finalScenePart1Duration;
+  const finalScenePart2Duration = fps * 2; // 2 seconds
 
   // Vortex center and properties
   const centerX = width / 2;
@@ -148,15 +162,17 @@ export const Video9: React.FC<{
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   );
 
-  // Final scene with simple transition
-  const showFinalScene = frame >= finalSceneStartFrame;
+  const showMainAnimation = frame < mainAnimationEndFrame;
+  const showFinalScenePart1 = frame >= finalScenePart1StartFrame && frame < finalScenePart2StartFrame;
+  const showFinalScenePart2 = frame >= finalScenePart2StartFrame;
 
   return (
     <AbsoluteFill style={{ 
       background: 'linear-gradient(45deg, #8360c3 0%, #2ebf91 100%)', 
       overflow: 'hidden' 
     }}>
-      {!showFinalScene && (
+      {/* Main Animation */}
+      {showMainAnimation && (
         <>
           {/* Central vortex core */}
           <div
@@ -244,17 +260,31 @@ export const Video9: React.FC<{
         </>
       )}
 
-      {/* Bottom Bar (shared with Video7/8) */}
-      <BottomBar3 username={username} productName={productName} price={price} type={type} />
+      {/* Bottom Bar - only show during main animation */}
+      <Sequence from={0} layout="none" durationInFrames={mainAnimationEndFrame}>
+        <BottomBar3 username={username} productName={productName} price={price} type={type} />
+      </Sequence>
 
-      {/* Final scene */}
-      {showFinalScene && (
-        <FinalScene3
-          username={username}
-          productName={productName}
-          price={price}
-          type={type}
-        />
+      {/* Final Scene Part 1 */}
+      {showFinalScenePart1 && (
+        <Sequence from={finalScenePart1StartFrame} durationInFrames={finalScenePart1Duration}>
+          <FinalScenePart1
+            username={username}
+            productName={productName}
+            price={price}
+            type={type}
+          />
+        </Sequence>
+      )}
+
+      {/* Final Scene Part 2 */}
+      {showFinalScenePart2 && (
+        <Sequence from={finalScenePart2StartFrame} durationInFrames={finalScenePart2Duration}>
+          <FinalScenePart2
+            username={username}
+            logoUrl={logoUrl}
+          />
+        </Sequence>
       )}
     </AbsoluteFill>
   );

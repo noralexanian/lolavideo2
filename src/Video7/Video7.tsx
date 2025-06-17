@@ -9,11 +9,9 @@ import {
   Sequence,
   getInputProps,
 } from 'remotion';
-import { loadFont } from "@remotion/google-fonts/Anton";
-import { FinalScene3 } from './FinalScene3';
+import { FinalScenePart1 } from './FinalScenePart1';
+import { FinalScenePart2 } from './FinalScenePart2';
 import { BottomBar3 } from './BottomBar3';
-
-const { fontFamily: antonFont } = loadFont();
 
 export const Video7: React.FC<{
   images: string[];
@@ -21,6 +19,7 @@ export const Video7: React.FC<{
   productName: string;
   price: string;
   type: number;
+  logoUrl?: string;
 }> = (defaultProps) => {
   // Get input props which will override default props
   const inputProps = getInputProps() || {};
@@ -29,7 +28,12 @@ export const Video7: React.FC<{
   const props = { ...defaultProps, ...inputProps };
 
   // Extract individual props
-  let { images, username, productName, price, type } = props;
+  let { images, username, productName, price, type, logoUrl } = props;
+
+  // Set default logoUrl if not provided
+  if (!logoUrl) {
+    logoUrl = 'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416515823.png';
+  }
 
   // Ensure we always have exactly 6 images
   if (!images || images.length === 0) {
@@ -73,10 +77,15 @@ export const Video7: React.FC<{
   const singleCardDuration = cardTransitionDuration + cardHoldDuration;
   const totalCardCycleDuration = singleCardDuration * images.length;
   
-  // Simple, reliable approach: Start final scene at the beginning of the last card's hold phase
-  // This guarantees the card is stable (not rotating) when final scene starts
+  // Calculate when main animation ends and final scenes start
   const lastCardTransitionEnd = (images.length - 1) * singleCardDuration + cardTransitionDuration;
-  const finalSceneStartFrame = Math.min(lastCardTransitionEnd, durationInFrames - fps * 2);
+  const mainAnimationEndFrame = lastCardTransitionEnd; // Keep full original animation duration
+  
+  // Final scene timing - 2 seconds each (added after main animation)
+  const finalScenePart1StartFrame = mainAnimationEndFrame;
+  const finalScenePart1Duration = fps * 2; // 2 seconds
+  const finalScenePart2StartFrame = finalScenePart1StartFrame + finalScenePart1Duration;
+  const finalScenePart2Duration = fps * 2; // 2 seconds
 
   // Card morphing logic
   const getCurrentCardIndex = () => {
@@ -165,16 +174,19 @@ export const Video7: React.FC<{
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
   );
 
-  const showFinalScene = frame >= finalSceneStartFrame;
+  const showMainAnimation = frame < mainAnimationEndFrame;
+  const showFinalScenePart1 = frame >= finalScenePart1StartFrame && frame < finalScenePart2StartFrame;
+  const showFinalScenePart2 = frame >= finalScenePart2StartFrame;
 
   return (
     <AbsoluteFill style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', overflow: 'hidden' }}>
-      {/* Bottom Bar */}
-      <Sequence from={0} layout="none" durationInFrames={durationInFrames}>
+      {/* Bottom Bar - only show during main animation */}
+      <Sequence from={0} layout="none" durationInFrames={mainAnimationEndFrame}>
         <BottomBar3 username={username} productName={productName} price={price} type={type} />
       </Sequence>
 
-      {!showFinalScene && (
+      {/* Main Animation */}
+      {showMainAnimation && (
         <>
           {/* Floating particles */}
           {particles.map((particle, i) => (
@@ -267,19 +279,29 @@ export const Video7: React.FC<{
               }}
             />
           </div>
-
-
         </>
       )}
 
-      {/* Final scene */}
-      {showFinalScene && (
-        <FinalScene3
-          username={username}
-          productName={productName}
-          price={price}
-          type={type}
-        />
+      {/* Final Scene Part 1 */}
+      {showFinalScenePart1 && (
+        <Sequence from={finalScenePart1StartFrame} durationInFrames={finalScenePart1Duration}>
+          <FinalScenePart1
+            username={username}
+            productName={productName}
+            price={price}
+            type={type}
+          />
+        </Sequence>
+      )}
+
+      {/* Final Scene Part 2 */}
+      {showFinalScenePart2 && (
+        <Sequence from={finalScenePart2StartFrame} durationInFrames={finalScenePart2Duration}>
+          <FinalScenePart2
+            username={username}
+            logoUrl={logoUrl}
+          />
+        </Sequence>
       )}
     </AbsoluteFill>
   );
