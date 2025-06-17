@@ -67,7 +67,7 @@ export const Video8: React.FC<{
     type,
   });
 
-  const { fps, width, height, durationInFrames } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const frame = useCurrentFrame();
 
   // Animation timing - slowed down significantly

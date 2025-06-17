@@ -67,7 +67,7 @@ export const Video7: React.FC<{
     type,
   });
 
-  const { fps, width, height, durationInFrames } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
   const frame = useCurrentFrame();
 
   // Animation timing - sped up by 1.25x (divide durations by 1.25)

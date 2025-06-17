@@ -172,6 +172,7 @@ class ServerRenderer {
 					productName: '',
 					price: '',
 					type: props.type || TYPE_PRODUCT,
+					logoUrl: props.logoUrl || 'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416515823.png',
 				};
 			} else {
 				inputPropsForSchema = {
@@ -180,6 +181,7 @@ class ServerRenderer {
 					productName: props.productName || 'Product',
 					price: props.price ? props.price.toString() : '199',
 					type: props.type || TYPE_PRODUCT,
+					logoUrl: props.logoUrl || 'https://lolapay-products.s3.amazonaws.com/2/2/2/222129/medium_1721416515823.png',
 				};
 			}
 
