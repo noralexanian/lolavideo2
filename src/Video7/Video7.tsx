@@ -203,11 +203,12 @@ export const Video7: React.FC<{
               top: titleY,
               transform: 'translateX(-50%)',
               fontSize: '36px',
-              fontWeight: 'bold',
+              fontWeight: '400',
               color: 'white',
               textAlign: 'center',
               textShadow: '0 2px 2px rgba(0,0,0,0.15)',
-              fontFamily: antonFont,
+              fontFamily: '"Helvetica Neue", "Segoe UI", system-ui, -apple-system, sans-serif',
+              letterSpacing: '1px',
               zIndex: 10,
             }}
           >

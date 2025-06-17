@@ -47,6 +47,7 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     boxShadow: '0 15px 35px rgba(0, 0, 0, 0.25)',
     textShadow: '0 2px 4px rgba(0,0,0,0.3)',
     border: '2px solid rgba(255,255,255,0.2)',
+    letterSpacing: '0.5px',
   };
 
   const bottomBarStyle = {
