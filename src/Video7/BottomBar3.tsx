@@ -14,16 +14,16 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center' as const,
-    minWidth: '60px',
-    minHeight: '68px',
-    background: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)',
+    minWidth: '120px',
+    minHeight: '50px',
+    background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
     color: '#fff',
-    fontSize: '28px',
+    fontSize: '24px',
     fontFamily: 'Arial, sans-serif',
     fontWeight: 'bold',
-    borderRadius: '12px',
-    padding: '4px 14px',
-    margin: '10px 10px 0px 0px',
+    borderRadius: '25px',
+    padding: '8px 16px',
+    margin: '0px 0px 10px 0px',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.18)',
     textShadow: '0 2px 4px rgba(0,0,0,0.3)',
     border: '2px solid rgba(255,255,255,0.3)',
@@ -61,7 +61,7 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     boxShadow: '0 -10px 30px rgba(0, 0, 0, 0.15)',
     zIndex: 10,
     backdropFilter: 'blur(10px)',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   };
 
   const containerStyle = {
@@ -71,26 +71,10 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     width: '100%',
   };
 
-  const containerStyleTop = {
-    position: 'fixed' as const,
-    top: 0,
-    right: 0,
-    zIndex: 30,
-  };
-
   return (
     <div>
-      {/* Price tag if type is product */}
-      {type === 0 && (
-        <div style={containerStyleTop}>
-          <div style={priceStyle}>
-            ${price}
-          </div>
-        </div>
-      )}
-
       <div style={containerStyle}>
-        {/* Only show product name above the bottom bar for product type */}
+        {/* Only show product info above the bottom bar for product type */}
         {type === 0 && (
           <div style={{
             marginBottom: '18px',
@@ -100,7 +84,14 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
             width: '100%',
             padding: '0 60px',
             boxSizing: 'border-box' as const,
+            display: 'flex',
+            flexDirection: 'column',
           }}>
+            {/* Price above product name */}
+            <div style={priceStyle}>
+              ${price}
+            </div>
+            {/* Product name */}
             <div style={bottomInfoStyle}>
               {productName}
             </div>
@@ -109,31 +100,16 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
 
         {/* Bottom Bar */}
         <div style={bottomBarStyle}>
-          <Img 
-            src={staticFile('assets/logo.png')} 
-            style={{  
-              width: '80px',
-              marginLeft: '16px',
-              marginRight: '16px',
-              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-            }}
-            onError={(e) => {
-              console.error('Logo failed to load');
-              e.currentTarget.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFdwI2QOYvCQAAAABJRU5ErkJggg==';
-            }} 
-          />
           <span 
             style={{ 
-              fontSize: '16px',
+              fontSize: '18px',
               fontFamily: 'Arial, sans-serif',
               color: '#333',
-              marginLeft: 'auto',
-              marginRight: '16px',
               fontWeight: '500',
               textShadow: '0 1px 2px rgba(0,0,0,0.1)'
             }}
           >
-            Disponible en: lolapay.com/<strong style={{color: '#667eea'}}>{username}</strong>
+            <strong>¡Compra ahora!</strong> lolapay.com/<strong>LolaStore</strong>
           </span>
         </div>
       </div>
