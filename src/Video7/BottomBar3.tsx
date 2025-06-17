@@ -15,7 +15,7 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     textAlign: 'center' as const,
     minWidth: '120px',
     minHeight: '50px',
-    background: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+    background: 'linear-gradient(135deg, #5de0e6 0%, #004aad 100%)',
     color: '#fff',
     fontSize: '24px',
     fontFamily: 'Arial, sans-serif',
@@ -25,7 +25,7 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     margin: '0px 0px 10px 0px',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.18)',
     textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-    border: '2px solid rgba(255,255,255,0.3)',
+    // border: '2px solid rgba(255,255,255,0.3)',
   };
 
   const bottomInfoStyle = {
@@ -45,7 +45,7 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
     margin: '0px 15px 15px 15px',
     boxShadow: '0 15px 35px rgba(0, 0, 0, 0.25)',
     textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-    border: '2px solid rgba(255,255,255,0.2)',
+    // border: '2px solid rgba(255,255,255,0.2)',
     letterSpacing: '0.5px',
   };
 

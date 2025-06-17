@@ -21,23 +21,20 @@ export const FinalScenePart2: React.FC<FinalScenePart2Props> = ({ username, logo
   const callToActionStyle = {
     margin: '60px 0 20px 0',
     lineHeight: '1.2em',
-    fontSize: '48px',
-    fontFamily: '"Helvetica Neue", "Segoe UI", system-ui, -apple-system, sans-serif',
-    fontWeight: '400',
+    fontSize: '50px',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
     color: 'white',
     textAlign: 'center' as const,
-    letterSpacing: '1px',
   };
   
   const urlStyle = {
     margin: '0',
     lineHeight: '1.2em',
-    fontSize: '36px',
-    fontFamily: '"Helvetica Neue", "Segoe UI", system-ui, -apple-system, sans-serif',
-    fontWeight: '300',
+    fontSize: '35px',
+    fontFamily: 'Arial, sans-serif',
     color: 'white',
     textAlign: 'center' as const,
-    letterSpacing: '0.5px',
   };
 
   return (

@@ -23,35 +23,31 @@ export const FinalScenePart1: React.FC<FinalScenePart1Props> = ({ username, prod
   const storeNameStyle = {
     margin: '0 0 60px 0',
     lineHeight: '1.2em',
-    fontSize: '64px',
-    fontFamily: '"Helvetica Neue", "Segoe UI", system-ui, -apple-system, sans-serif',
-    fontWeight: '400',
+    fontSize: '60px',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
     color: 'white',
     textAlign: 'center' as const,
-    letterSpacing: '2px',
-    textTransform: 'uppercase' as const,
   };
   
   const productNameStyle = {
     margin: '0 0 40px 0',
     lineHeight: '1.2em',
-    fontSize: '48px',
-    fontFamily: '"Helvetica Neue", "Segoe UI", system-ui, -apple-system, sans-serif',
-    fontWeight: '300',
+    fontSize: '60px',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
     color: 'white',
     textAlign: 'center' as const,
-    letterSpacing: '1px',
   };
   
   const priceStyle = {
     margin: '0',
     lineHeight: '1.2em',
-    fontSize: '48px',
-    fontFamily: '"Helvetica Neue", "Segoe UI", system-ui, -apple-system, sans-serif',
-    fontWeight: '400',
+    fontSize: '60px',
+    fontFamily: 'Arial, sans-serif',
+    fontWeight: 'bold',
     color: 'white',
     textAlign: 'center' as const,
-    letterSpacing: '1px',
   };
 
   return (
