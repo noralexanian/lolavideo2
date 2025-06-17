@@ -70,10 +70,10 @@ export const Video7: React.FC<{
   const { fps, width, height, durationInFrames } = useVideoConfig();
   const frame = useCurrentFrame();
 
-  // Animation timing - keep under 10 seconds (300 frames at 30fps)
+  // Animation timing - sped up by 1.25x (divide durations by 1.25)
   const bottomBarHeight = 60;
-  const cardTransitionDuration = fps * 1.5; // 1.5 seconds per transition (slightly faster)
-  const cardHoldDuration = fps * 1.0; // 1.0 seconds hold time (slightly faster)
+  const cardTransitionDuration = fps * 1.2; // 1.2 seconds per transition (was 1.5s, now 1.25x faster)
+  const cardHoldDuration = fps * 0.8; // 0.8 seconds hold time (was 1.0s, now 1.25x faster)
   const singleCardDuration = cardTransitionDuration + cardHoldDuration;
   const totalCardCycleDuration = singleCardDuration * images.length;
   
