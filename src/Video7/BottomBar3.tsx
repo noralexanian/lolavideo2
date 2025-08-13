@@ -109,7 +109,7 @@ export const BottomBar3: React.FC<BottomBar3Props> = ({ username, productName, p
               textShadow: '0 1px 2px rgba(0,0,0,0.1)'
             }}
           >
-            <strong>¡Compra ahora!</strong> lolapay.com/<strong>LolaStore</strong>
+            <strong>¡Compra ahora!</strong> lolapay.com/<strong>{username}</strong>
           </span>
         </div>
       </div>
